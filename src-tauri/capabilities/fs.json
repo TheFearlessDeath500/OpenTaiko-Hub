@@ -1,0 +1,32 @@
+{
+    "identifier": "migrated3",
+    "description": "permissions that were migrated from v1",
+    "local": true,
+    "windows": ["main"],
+    "permissions": [
+        {
+            "identifier": "fs:default",
+            "allow": [
+              { "path": "**/*"}
+            ]
+          },
+          {
+            "identifier": "fs:allow-copy-file",
+            "allow": [
+              { "path": "**/*"}
+            ]
+          },
+          {
+            "identifier": "fs:write-all",
+            "allow": [
+              { "path": "**/*"}
+            ]
+          },
+      "fs:default",
+      "fs:allow-copy-file",
+      "fs:write-all",
+      "core:path:default",
+      "core:event:allow-listen",
+      "core:event:allow-unlisten"
+    ]
+  }
