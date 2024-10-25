@@ -1,0 +1,9 @@
+{
+    "identifier": "default",
+    "description": "default capabilities",
+    "local": true,
+    "windows": ["main"],
+    "permissions": [
+      "os:default"
+    ]
+  }

@@ -4,9 +4,9 @@
 use std::fs::File;
 use std::path::Path;
 use tokio::task;
-use tauri::{AppHandle, Manager, Emitter};
+use tauri::{AppHandle, Emitter};
 use zip::ZipArchive;
-use std::io::{BufReader, Write};
+use std::io::{BufReader};
 
 #[tauri::command]
 async fn unzip_and_get_first_folder(
@@ -73,6 +73,7 @@ fn main() {
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_upload::init())
     .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_os::init())
     .invoke_handler(tauri::generate_handler![unzip_and_get_first_folder])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
