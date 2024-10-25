@@ -343,6 +343,9 @@
                     </div>
                 </div>
             </section>
+
+            <p>Current OS: {optk_OS}</p>
+            <p>Be sure to download a skin (Skins tab) and songs (Songlist tab) before first starting the game!</p>
         {/if}
 
         <!-- Songs -->
