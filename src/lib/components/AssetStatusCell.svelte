@@ -24,6 +24,12 @@
         {/if}
     {:else if CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion === AssetInfo[`${AssetPrefix}Version`]}
         <p>{CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion}</p>
+        <br />
+        {#if Progress === undefined}
+            <button type="button" on:click={() => DownloadMethod(AssetInfo, CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]], AssetType)} class="text-white bg-gray-700 hover:bg-gray-800 font-medium rounded-lg text-sm px-3 py-1 dark:bg-gray-600 dark:hover:bg-gray-700">Redownload</button>
+        {:else}
+            <ProgressBar bind:value={Progress} max={100} />
+        {/if}
     {:else}
         <p>{CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion}</p>
         <br />

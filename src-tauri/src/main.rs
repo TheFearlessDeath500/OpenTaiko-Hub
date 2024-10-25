@@ -7,6 +7,28 @@ use tokio::task;
 use tauri::{AppHandle, Emitter};
 use zip::ZipArchive;
 use std::io::{BufReader};
+use std::process::Command;
+
+#[tauri::command]
+fn execute_external_app(os: String, path: String) -> Result<(), String> {
+    let full_path = if os == "Win" {
+        format!("{}.exe", path)
+    } else {
+        path
+    };
+
+    // Extract the directory from the full path
+    let dir = std::path::Path::new(&full_path)
+        .parent()
+        .ok_or_else(|| String::from("Failed to extract directory from path"))?;
+
+    Command::new(&full_path)
+        .current_dir(dir)
+        .spawn()
+        .map_err(|e| format!("Failed to execute the app: {}", e))?;
+
+    Ok(())
+}
 
 #[tauri::command]
 async fn unzip_and_get_first_folder(
@@ -75,6 +97,7 @@ fn main() {
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_os::init())
     .invoke_handler(tauri::generate_handler![unzip_and_get_first_folder])
+    .invoke_handler(tauri::generate_handler![execute_external_app])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

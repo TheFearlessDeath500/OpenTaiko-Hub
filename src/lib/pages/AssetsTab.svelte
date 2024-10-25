@@ -282,7 +282,7 @@
             assetVersion: assetVersion
         };
 
-        delete assetDLProgress[assetType][assetRelpath];
+        assetDLProgress[assetType][assetRelpath] = undefined;
     }
 
     onMount(async () => {

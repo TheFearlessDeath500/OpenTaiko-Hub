@@ -430,6 +430,12 @@
 				{:else if currentSongs[songInfo.uniqueId].chartMD5 === songInfo.tjaMD5}
 				<td>
 					<p>Up-to-date</p>
+                    <br />
+                    {#if songDLProgress[songInfo.uniqueId] === undefined}
+					<button type="button" on:click={DownloadSong(songInfo, currentSongs[songInfo.uniqueId])} class="text-white bg-gray-700 hover:bg-gray-800 font-medium rounded-lg text-sm px-3 py-1 dark:bg-gray-600 dark:hover:bg-gray-700">Redownload</button>
+					{:else}
+					<ProgressBar bind:value={songDLProgress[songInfo.uniqueId]} max={100} />
+					{/if}
 				</td>
 				{:else}
 				<td>
