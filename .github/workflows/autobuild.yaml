@@ -57,7 +57,6 @@ jobs:
               releaseName: 'OpenTaiko Hub v__VERSION__'
               releaseBody: |
                 Note: The Linux builds are experimental, tested only on Ubuntu 22.04 for now.
-                Will be usable upon OpenTaiko 0.6.0.0 release.
               releaseDraft: false
               prerelease: false
               args: ${{ matrix.args }}
