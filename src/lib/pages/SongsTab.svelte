@@ -257,15 +257,17 @@
             let localFileName = (filePath.startsWith(songObj.tjaFolderPath + '\\') || filePath.startsWith(songObj.tjaFolderPath + '/')) ?
                 filePath.slice(songObj.tjaFolderPath.length + 1)
                 : filePath.split("\\").pop();
-            let localFileFold = localFileName.replace(/\\[^\\]*$/g);
+            let localFileFold = localFileName.replace(/(?:^|\\)[^\\]*$/g, '');
 
             const tjaFileUrl = `https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Soundtrack/main/${filePath}`;
             const dlPath = await path.join(chartDownloadFolder, localFileName.replace(/\\/g, '/'));
-            const dlPathFold = await path.join(chartDownloadFolder, localFileFold.replace(/\\/g, '/'));
 
-            let inner_fold_exists = await exists(dlPathFold);
-            if (!inner_fold_exists)
-                await mkdir(dlPathFold, {recursive: true});
+            if (localFileFold) {
+                const dlPathFold = await path.join(chartDownloadFolder, localFileFold.replace(/\\/g, '/'));
+                let inner_fold_exists = await exists(dlPathFold);
+                if (!inner_fold_exists)
+                    await mkdir(dlPathFold, {recursive: true});
+            }
 
             const success = await backoffDownload(
                 tjaFileUrl,
