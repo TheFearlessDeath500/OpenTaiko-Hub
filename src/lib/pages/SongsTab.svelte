@@ -254,7 +254,9 @@
 
         let totbyts = 0;
         for (const filePath of songObj.tjaFilesPath) {
-            const localFileName = filePath.split("\\").pop();
+            let localFileName = (filePath.startsWith(songObj.tjaFolderPath + '\\') || filePath.startsWith(songObj.tjaFolderPath + '/')) ?
+                filePath.slice(songObj.tjaFolderPath.length + 1)
+                : filePath.split("\\").pop();
             const tjaFileUrl = `https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Soundtrack/main/${filePath}`;
             const dlPath = await path.join(chartDownloadFolder, localFileName.replace(/\\/g, '/'));
 
