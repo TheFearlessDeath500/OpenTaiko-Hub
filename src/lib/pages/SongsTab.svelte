@@ -254,20 +254,18 @@
 
         let totbyts = 0;
         for (const filePath of songObj.tjaFilesPath) {
-            let localFileName = (filePath.startsWith(songObj.tjaFolderPath + '\\') || filePath.startsWith(songObj.tjaFolderPath + '/')) ?
+            // forbid non-children paths
+            let localFilePath = (filePath.startsWith(songObj.tjaFolderPath + '\\') || filePath.startsWith(songObj.tjaFolderPath + '/')) ?
                 filePath.slice(songObj.tjaFolderPath.length + 1)
                 : filePath.split("\\").pop();
-            let localFileFold = localFileName.replace(/(?:^|\\)[^\\]*$/g, '');
 
             const tjaFileUrl = `https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Soundtrack/main/${filePath}`;
-            const dlPath = await path.join(chartDownloadFolder, localFileName.replace(/\\/g, '/'));
+            const dlPath = await path.join(chartDownloadFolder, localFilePath.replace(/\\/g, '/'));
 
-            if (localFileFold) {
-                const dlPathFold = await path.join(chartDownloadFolder, localFileFold.replace(/\\/g, '/'));
-                let inner_fold_exists = await exists(dlPathFold);
-                if (!inner_fold_exists)
-                    await mkdir(dlPathFold, {recursive: true});
-            }
+            // ensure subdirectory exists
+            const dlPathFold = await path.dirname(dlPath);
+            if (!await exists(dlPathFold))
+                await mkdir(dlPathFold, {recursive: true});
 
             const success = await backoffDownload(
                 tjaFileUrl,
@@ -284,13 +282,18 @@
                 return ;
             }
 
-            fileNames.push(localFileName);
+            fileNames.push(localFilePath);
         };
 
         songDLProgress[songObj.uniqueId] = 0;
         await Promise.all(fileNames.map(async (fn, idx) => {
             const strPath = await path.join(chartDownloadFolder, fn.replace(/\\/g, '/'));
             const destPath = await path.join(tjaFullPath, fn.replace(/\\/g, '/'));
+
+            // ensure subdirectory exists
+            const destPathDir = await path.dirname(destPath);
+            if (!await exists(destPathDir))
+                await mkdir(destPathDir, {recursive: true});
 
             await copyFile(strPath, destPath);
             songDLProgress[songObj.uniqueId] = (idx + 1) * (100 / fileNames.length);
