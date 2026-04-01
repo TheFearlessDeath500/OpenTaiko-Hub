@@ -14,3 +14,21 @@ Launcher, updater and asset manager for OpenTaiko.
 #### Skeleton preset themes
 The Skeleton preset themes are themes provided by [Skeleton UI.](https://www.skeleton.dev/ ) (Specifically Skeleton v2.)
 <br>You can find info about the provided Skeleton themes [here.](https://www.skeleton.dev/docs/design/themes)
+
+## How to Test Locally
+
+### First Time: Environment Set up (Windows)
+
+Follow the instruction of <https://tauri.app/start/prerequisites/#windows>.
+
+Warning: Using WSL (Windows Subsystem for Linux) to test the project will not work because the path for Windows version of OpenTaiko is different. Installing natively on the Windows side is necessary.
+
+### Build and Launch Dev Server
+
+Open terminal, `cd` into the OpenTaiko-Hub directory, run `npm install` to install or update the dependency packages.
+
+Then run `npm run tauri dev`, and then wait the project to build and the OpenTaiko-Hub window to boot.
+
+## How to Build Locally
+
+Use the release build from GitHub action is usually enough. However, you can still run `npm run tauri build` to build the build.
