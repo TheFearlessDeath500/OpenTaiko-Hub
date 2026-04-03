@@ -249,8 +249,8 @@
       "soundtrack": "OpenTaiko soundtrack"
     },
     "card": {
-      "peepo_official":   { "subtitle": "Official Latest",   "text": "The official latest version by samyuu, for regular charts without the experimental features." },
-      "peepo_unofficial": { "subtitle": "Unofficial Latest", "text": "The unofficial latest version continued by Komi, adding experimental features supported by OpenTaiko." },
+      "peepo_origin":     { "subtitle": "Original Latest",   "text": "The original version by samyuu, for regular charts without the experimental features." },
+      "peepo_optk":       { "subtitle": "OpenTaiko Team Latest", "text": "The version continued by Komi and OpenTaiko Team members, adding experimental features supported by OpenTaiko and enhancing regular editing." },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer's fork",  "text": "Visualize your charts and check stats about them on the go!" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "Official Latest",   "text": "The recommended tool to sync your charts trouble free!" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "Official Latest",  "text": "The recommended tool to make VTT files for your charts!" },

@@ -249,8 +249,8 @@
       "soundtrack": "OpenTaiko 原聲帶"
     },
     "card": {
-      "peepo_official":   { "subtitle": "官方最新版",   "text": "samyuu 維護的官方最新版，可用於不使用實驗功能的普通譜面。" },
-      "peepo_unofficial": { "subtitle": "非官方最新版", "text": "由 Komi 繼續維護的非官方最新版，增加了可用於 OpenTaiko 的實驗功能。" },
+      "peepo_origin":     { "subtitle": "原作者最新版",   "text": "原作者 samyuu 維護的版本，可用於不使用實驗功能的普通譜面。" },
+      "peepo_optk":       { "subtitle": "OpenTaiko 團隊最新版", "text": "由 Komi 與 OpenTaiko 團隊繼續維護的版本，增加了可用於 OpenTaiko 的實驗功能，並強化了普通譜面的編輯功能。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer 版", "text": "產生並查看譜面的可視化圖片與統計資訊！" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "官方最新版",   "text": "最推薦的對譜面對拍的工具！" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "官方最新版",  "text": "最推薦的對譜面製作 VTT 歌詞檔的工具！" },

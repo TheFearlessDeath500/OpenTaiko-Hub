@@ -8,10 +8,13 @@
 
     // Tools
     import ToolCard from '$lib/components/ToolCard.svelte';
+    import peepoSamyuuScreenshotUrl from '$lib/peepoSamyuu.png';
     import peepoScreenshotUrl from '$lib/peepo.png';
     import arrowScreenshotUrl from '$lib/arrow.png';
     import tjatoolsScreenshotUrl from '$lib/tjatools.png';
 	import subeditScreenshotUrl from '$lib/subedit.png';
+	import songSubmissionScreenshotUrl from '$lib/songsubmission.png';
+	import songSuggestionScreenshotUrl from '$lib/songsuggestion.png';
 
     let currentTab = 0;
 	let optk_OS = "Win";
@@ -66,15 +69,15 @@
 			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">	
 				<ToolCard 
 					Url="https://drive.google.com/uc?export=download&id=1TQuvKo1tBZrXZIMlUMJ3-1vU1jfsxI2H"
-					ImageSrc={peepoScreenshotUrl}
-					CardSubtitle={$_('tools.card.peepo_official.subtitle')}
-					CardText={$_('tools.card.peepo_official.text')}
+					ImageSrc={peepoSamyuuScreenshotUrl}
+					CardSubtitle={$_('tools.card.peepo_origin.subtitle')}
+					CardText={$_('tools.card.peepo_origin.text')}
 				/>
 				<ToolCard
 					Url="https://github.com/0auBSQ/PeepoDrumKit/releases/latest"
 					ImageSrc={peepoScreenshotUrl}
-					CardSubtitle={$_('tools.card.peepo_unofficial.subtitle')}
-					CardText={$_('tools.card.peepo_unofficial.text')}
+					CardSubtitle={$_('tools.card.peepo_optk.subtitle')}
+					CardText={$_('tools.card.peepo_optk.text')}
 				/>
 			</div>
 		{/if}
@@ -121,14 +124,14 @@
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
 			<ToolCard
 				Url="https://forms.gle/WXNUwjJyLdJoeRSM6"
-				ImageSrc={peepoScreenshotUrl}
+				ImageSrc={songSubmissionScreenshotUrl}
 				CardTitle={$_('tools.card.submission.title')}
 				CardSubtitle={$_('tools.card.submission.subtitle')}
 				CardText={$_('tools.card.submission.text')}
 			/>
 			<ToolCard
 				Url="https://forms.gle/1HbDtS7FtJDNfhUb7"
-				ImageSrc={peepoScreenshotUrl}
+				ImageSrc={songSuggestionScreenshotUrl}
 				CardTitle={$_('tools.card.suggestion.title')}
 				CardSubtitle={$_('tools.card.suggestion.subtitle')}
 				CardText={$_('tools.card.suggestion.text')}
