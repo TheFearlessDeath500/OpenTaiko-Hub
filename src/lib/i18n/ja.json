@@ -235,18 +235,27 @@
     },
     "charting": {
       "primary":   "主要リソース：",
-      "tutorial":  "ugyuu氏による譜面作成チュートリアル",
+      "tutorial": {
+        "title":    "太鼓 .TJA 譜面作成チュートリアル",
+        "subtitle": "ugyuu氏による譜面作成チュートリアル"
+      },
       "peepo_dl":  "PeepoDrumKitをダウンロード：",
       "additional": "その他のリソース："
     },
+    "lyrics": {
+      "dl": "歌詞エディタ"
+    },
+    "submit": {
+      "soundtrack": "OpenTaikoサウンドトラック"
+    },
     "card": {
-      "peepo_official":   { "title": "PeepoDrumKit", "subtitle": "公式最新版",   "text": "samyuu氏による公式最新版。実験的機能なしの通常譜面に使用します。" },
-      "peepo_unofficial": { "title": "PeepoDrumKit", "subtitle": "非公式最新版", "text": "Komi氏が継続している非公式最新版。OpenTaikoがサポートする実験的機能が追加されています。" },
+      "peepo_official":   { "subtitle": "公式最新版",   "text": "samyuu氏による公式最新版。実験的機能なしの通常譜面に使用します。" },
+      "peepo_unofficial": { "subtitle": "非公式最新版", "text": "Komi氏が継続している非公式最新版。OpenTaikoがサポートする実験的機能が追加されています。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer's fork", "text": "譜面を視覚化し、統計情報をリアルタイムで確認できます！" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "公式最新版",   "text": "譜面を簡単に同期できる推奨ツールです！" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "公式最新版",  "text": "譜面用のVTTファイルを作成するための推奨ツールです！" },
-      "submission":       { "title": "OpenTaikoサウンドトラック", "subtitle": "曲投稿フォーム", "text": "OpenTaikoサウンドトラックに曲を投稿できます！採用された場合、通常2週間以内に譜面が作成されます。" },
-      "suggestion":       { "title": "OpenTaikoサウンドトラック", "subtitle": "曲提案フォーム", "text": "OpenTaikoに合うと思うアーティストをここで提案できます！" }
+      "submission":       { "title": "曲投稿フォーム", "subtitle": "自作の曲", "text": "OpenTaikoサウンドトラックに曲を投稿できます！採用された場合、通常2週間以内に譜面が作成されます。" },
+      "suggestion":       { "title": "曲提案フォーム", "subtitle": "他のアーティストの曲", "text": "OpenTaikoに合うと思うアーティストをここで提案できます！" }
     }
   },
   "themes": {

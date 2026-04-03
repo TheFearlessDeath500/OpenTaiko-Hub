@@ -48,32 +48,31 @@
 <!-- Charting -->
 {#if currentTab === 0}
 	<div class="content">
-		{#if optk_OS === "Win"}
-			<h1 class="mb-3">{$_('tools.charting.primary')}</h1>
-			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
-				<div class="card bg-initial card-hover overflow-hidden">
-					<header>
-						<lite-youtube width="100%" videoid="U0i-z-tpxY8" playlabel="Play: Keynote (Google I/O '18)"></lite-youtube>
-					</header>
-					<div class="p-4 space-y-4 text-black dark:text-white">
-						<h6 data-toc-ignore="">{$_('tools.charting.tutorial')}</h6>
-					</div>
+		<h1 class="mb-3">{$_('tools.charting.primary')}</h1>
+		<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
+			<div class="card bg-initial card-hover overflow-hidden">
+				<header>
+					<lite-youtube width="100%" videoid="U0i-z-tpxY8" playlabel="Play: Keynote (Google I/O '18)"></lite-youtube>
+				</header>
+				<div class="p-4 space-y-4 text-black dark:text-white">
+					<h2 data-toc-ignore="">{$_('tools.charting.tutorial.title')}</h2>
+					<h6 data-toc-ignore="">{$_('tools.charting.tutorial.subtitle')}</h6>
 				</div>
 			</div>
+		</div>
 
+		{#if optk_OS === "Win"}	
 			<h2 class="my-3">{$_('tools.charting.peepo_dl')}</h2>
-			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
-				<ToolCard
+			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">	
+				<ToolCard 
 					Url="https://drive.google.com/uc?export=download&id=1TQuvKo1tBZrXZIMlUMJ3-1vU1jfsxI2H"
 					ImageSrc={peepoScreenshotUrl}
-					CardTitle={$_('tools.card.peepo_official.title')}
 					CardSubtitle={$_('tools.card.peepo_official.subtitle')}
 					CardText={$_('tools.card.peepo_official.text')}
 				/>
 				<ToolCard
 					Url="https://github.com/0auBSQ/PeepoDrumKit/releases/latest"
 					ImageSrc={peepoScreenshotUrl}
-					CardTitle={$_('tools.card.peepo_unofficial.title')}
 					CardSubtitle={$_('tools.card.peepo_unofficial.subtitle')}
 					CardText={$_('tools.card.peepo_unofficial.text')}
 				/>
@@ -103,6 +102,7 @@
 {/if}
 {#if currentTab === 1}
 	<div class="content">
+		<h1 class="my-3">{$_('tools.lyrics.dl')}</h1>
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
 			<ToolCard
 				Url="https://github.com/SubtitleEdit/subtitleedit"
@@ -117,6 +117,7 @@
 <!-- Submit your content -->
 {#if currentTab === 2}
 	<div class="content">
+		<h1 class="my-3">{$_('tools.submit.soundtrack')}</h1>
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
 			<ToolCard
 				Url="https://forms.gle/WXNUwjJyLdJoeRSM6"

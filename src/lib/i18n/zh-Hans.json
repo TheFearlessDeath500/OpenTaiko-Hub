@@ -235,18 +235,27 @@
     },
     "charting": {
       "primary":   "主要资源：",
-      "tutorial":  "ugyuu 的谱面制作教程",
+      "tutorial": {
+        "title":    "太鼓 .TJA 谱面制作教程",
+        "subtitle": "ugyuu 的谱面制作教程"
+      },
       "peepo_dl":  "下载 PeepoDrumKit：",
       "additional": "其他资源："
     },
+    "lyrics": {
+      "dl": "歌词编辑器"
+    },
+    "submit": {
+      "soundtrack": "OpenTaiko 原声带"
+    },
     "card": {
-      "peepo_official":   { "title": "PeepoDrumKit", "subtitle": "官方最新版",   "text": "samyuu 的官方最新版，用于没有实验性功能的普通谱面。" },
-      "peepo_unofficial": { "title": "PeepoDrumKit", "subtitle": "非官方最新版", "text": "由 Komi 继续维护的非官方最新版，增加了 OpenTaiko 支持的实验性功能。" },
+      "peepo_official":   { "subtitle": "官方最新版",   "text": "samyuu 的官方最新版，用于没有实验性功能的普通谱面。" },
+      "peepo_unofficial": { "subtitle": "非官方最新版", "text": "由 Komi 继续维护的非官方最新版，增加了 OpenTaiko 支持的实验性功能。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer 的分支", "text": "随时可视化谱面并查看统计信息！" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "官方最新版",   "text": "轻松同步谱面的推荐工具！" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "官方最新版",  "text": "为谱面制作 VTT 文件的推荐工具！" },
-      "submission":       { "title": "OpenTaiko 原声带", "subtitle": "歌曲投稿表单", "text": "你可以在这里为 OpenTaiko 原声带投稿！如果歌曲被接受，通常在 2 周内完成谱面制作。" },
-      "suggestion":       { "title": "OpenTaiko 原声带", "subtitle": "歌曲建议表单", "text": "你可以在这里推荐你认为适合 OpenTaiko 的艺术家！" }
+      "submission":       { "title": "歌曲投稿表单", "subtitle": "自作歌曲", "text": "你可以在这里为 OpenTaiko 原声带投稿！如果歌曲被接受，通常在 2 周内完成谱面制作。" },
+      "suggestion":       { "title": "歌曲建议表单", "subtitle": "其他艺术家的歌曲", "text": "你可以在这里推荐你认为适合 OpenTaiko 的艺术家！" }
     }
   },
   "themes": {
