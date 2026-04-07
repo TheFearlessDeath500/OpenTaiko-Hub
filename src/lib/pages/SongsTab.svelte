@@ -29,12 +29,28 @@
     let songCountProgress = 0;
     let songCountProgressBar = null;
 
+    const filter1 = (sInfo) => {
+        const uids = ["losTPEtAlSwANDERRBHLiXoUNdsetSUnaN"];
+        return sInfo.filter(obj => !uids.includes(obj.uniqueId));
+    }
+
+    const filter2 = (sInfo) => {
+        return sInfo;
+    }
+
     const updateSoundtrackInfo = async () => {
         try {
             const response = await fetch(soundtrackInfoUrl);
         if (response.ok) {
             const text = await response.text();
             soundtrackInfo = JSON.parse(text);
+
+            if (navigator.language === "zh-CN") {
+                soundtrackInfo = filter1(soundtrackInfo);
+            }
+            else {
+                soundtrackInfo = filter2(soundtrackInfo);
+            }
         } else {
             soundtrackInfo = {};
         }
