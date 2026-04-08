@@ -3,6 +3,14 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.14] - 2026-04-08 (Alpha)
+
+- [Enhancement] Faster local songs status processing for users with lots of custom charts in their song folder.
+
+## [0.1.12] - 2026-04-01 (Alpha)
+
+- [Fix] Fix broken download for songs having subfolders with TJAP3ext image gimmicks.
+
 ## [0.1.7] - 2025-09-20 (Alpha)
 
 - [Feat/Theme] Added the "OpTk Hub Themes" tab with the following themes:

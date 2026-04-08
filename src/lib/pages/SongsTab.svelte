@@ -63,6 +63,7 @@
         const res = await GetRootPath();
         const baseDir = './OpenTaiko/Songs';
         scanning = true;
+        const soundtrackIds = new Set(soundtrackInfo.map(s => s.uniqueId));
         
         async function folderExists(folderPath) {
             try {
@@ -100,6 +101,9 @@
                             const uidFullPath = await path.join(res, uniqueIdFile);
                             const uniqueIdData = (await readTextFile(uidFullPath)).replace(re, "");
                             const uniqueId = (JSON.parse(uniqueIdData)).id;
+
+                            // Skip songs not tracked in soundtrackInfo
+                            if (!soundtrackIds.has(uniqueId)) continue;
 
                             // Compute the MD5 hash of the .tja file
                             const tjaFullPath = await path.join(res, tjaPath);
@@ -373,7 +377,7 @@
     }
 
     onMount(async () => {
-        updateSoundtrackInfo();
+        await updateSoundtrackInfo();
         crawlSongs();
     });
 
