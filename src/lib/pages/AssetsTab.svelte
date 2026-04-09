@@ -5,6 +5,32 @@
     import { readTextFile, mkdir, readDir, exists, copyFile, remove } from '@tauri-apps/plugin-fs';
     import { fetch } from "@tauri-apps/plugin-http";
     import { path } from '@tauri-apps/api';
+    import { invoke } from '@tauri-apps/api/core';
+    import { listen } from '@tauri-apps/api/event';
+
+    const copyAllFilesRecursive = async (src, dst) => {
+        let files;
+        try {
+            files = await readDir(src, { recursive: false });
+        } catch (error) {
+            console.error(`Error reading directory ${src}:`, error);
+            return;
+        }
+for (const file of files) {
+            const srcPath = `${src}/${file.name}`;
+            const dstPath = `${dst}/${file.name}`;
+            try {
+                if (file.isDirectory) {
+                    await mkdir(dstPath, { recursive: true });
+                    await copyAllFilesRecursive(srcPath, dstPath);
+                } else {
+                    await copyFile(srcPath, dstPath);
+                }
+            } catch (error) {
+                console.error(`Error copying ${srcPath} → ${dstPath}:`, error);
+            }
+        }
+    }
     import { getContext } from 'svelte';
     const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload } = getContext('toast');
 
@@ -191,91 +217,130 @@
     const DownloadAsset = async (assetObj, currentObj, assetType, assetNb = undefined, assetTotal = undefined) => {
         const res = await GetRootPath();
 
-        const targetFile = {
-            "Skins": "SkinConfig.ini",
-            "Characters": "CharaConfig.txt",
-            "Puchicharas": "PuchiConfig.txt"
-        }[assetType];
         const baseDir = {
             "Skins": "./OpenTaiko/System",
             "Characters": "./OpenTaiko/Global/Characters",
             "Puchicharas": "./OpenTaiko/Global/PuchiChara"
         }[assetType];
-        const subDir = {
-            "Skins": "System",
-            "Characters": "Global",
-            "Puchicharas": "Global"
-        }[assetType];
         const assetRelpath = (assetType === "Skins") ? assetObj.skinFolder : assetObj.charaFolder;
-        const assetFpath = (assetType === "Skins") ? assetObj.skinFilesPath : assetObj.charaFilesPath;
         const assetSize = (assetType === "Skins") ? assetObj.skinSize : assetObj.charaSize;
         const assetVersion = (assetType === "Skins") ? assetObj.skinVersion : assetObj.charaVersion;
 
         assetDLProgress[assetType][assetRelpath] = 0;
 
-        const baseDirPath = await path.join(res, baseDir);
         const localPath = `${baseDir}/${assetRelpath}`;
         const assetFullPath = await path.join(res, localPath);
 
-        let fold_exists = await exists(assetFullPath);
-        if (!fold_exists)
-            await mkdir(assetFullPath, {recursive: true});
+        if (!await exists(assetFullPath))
+            await mkdir(assetFullPath, { recursive: true });
 
         const tmpFolder = await path.join(res, "./tmp");
         const uuid = crypto.randomUUID();
-        const assetDownloadFolder = await path.join(tmpFolder, `${uuid}/`);
+        const assetDownloadFolder = await path.join(tmpFolder, uuid);
 
-        fold_exists = await exists(assetDownloadFolder);
-        if (!fold_exists)
-            await mkdir(assetDownloadFolder, {recursive: true});
+        if (!await exists(assetDownloadFolder))
+            await mkdir(assetDownloadFolder, { recursive: true });
 
-        let fileNames = [];
+        if (assetType === "Skins") {
+            // Zip name: spaces → dots, parentheses stripped (matches release asset naming)
+            const zipName = assetObj.skinFolder.replace(/[()]/g, '').replace(/ /g, '.') + '.zip';
+            const zipUrl = `https://github.com/OpenTaiko/OpenTaiko-Skins/releases/download/system-assets/${zipName}`;
+            const zipPath = await path.join(assetDownloadFolder, 'skin.zip');
 
-        let totbyts = 0;
-        for (const filePath of assetFpath) {
-            const localFileName = filePath.replace(/^[^\\]+\\/, '');
-            const assetFileUrl = `https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Skins/main/${subDir}/${filePath}`;
-            const dlPath = await path.join(assetDownloadFolder, localFileName.replace(/\\/g, '/'));
-            const fileFold = await path.join(assetDownloadFolder, (filePath.split('\\').length > 2 ? filePath.replace(/^[^\\]+\\/, '').replace(/\\[^\\]+$/, '') : '').replace(/\\/g, '/'));
-
-            const fold_exists = await exists(fileFold);
-            if (!fold_exists) {
-                await mkdir(fileFold, { recursive: true });
-            }
-
+            let totbyts = 0;
             const success = await backoffDownload(
-                assetFileUrl,
-                dlPath,
+                zipUrl,
+                zipPath,
                 (pr) => {
                     totbyts += pr.progress;
                     assetDLProgress[assetType][assetRelpath] = 100 * (totbyts / (assetSize * 1024 * 1024));
+                    assetDLProgress = assetDLProgress;
                 }
             );
 
             if (!success) {
+                // backoffDownload already shows an error toast; show zip-specific guidance on top
+                TriggerError(get(_)('assets.error.zip_not_found'));
+                await remove(assetDownloadFolder, { recursive: true });
                 delete assetDLProgress[assetType][assetRelpath];
-                return; // Stop the entire process if download fails
+                return;
             }
 
-            fileNames.push(localFileName);
+            assetDLProgress[assetType][assetRelpath] = 0;
+            assetDLProgress = assetDLProgress;
+
+            let extracting = true;
+            const capturedRelpath = assetRelpath;
+            const capturedType = assetType;
+            const unlisten = await listen('extract-progress', (event) => {
+                if (!extracting) return;
+                assetDLProgress[capturedType][capturedRelpath] = event.payload;
+                assetDLProgress = assetDLProgress;
+            });
+
+            await invoke('unzip_and_get_first_folder', { zipPath });
+            extracting = false;
+            unlisten();
+
+            // All skin zips are flat (files/folders at zip root), so copy directly
+            // from the extraction folder into the skin destination.
+            await remove(zipPath);
+            await copyAllFilesRecursive(assetDownloadFolder.replace(/\\/g, '/'), assetFullPath);
+
+            await remove(assetDownloadFolder, { recursive: true });
+
+        } else {
+            // Per-file download for Characters and Puchicharas
+            const subDir = "Global";
+            const assetFpath = assetObj.charaFilesPath;
+            const baseDirPath = await path.join(res, baseDir);
+
+            let fileNames = [];
+            let totbyts = 0;
+
+            for (const filePath of assetFpath) {
+                const localFileName = filePath.replace(/^[^\\]+\\/, '');
+                const assetFileUrl = `https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Skins/main/${subDir}/${filePath}`;
+                const dlPath = await path.join(assetDownloadFolder, localFileName.replace(/\\/g, '/'));
+                const fileFold = await path.join(assetDownloadFolder, (filePath.split('\\').length > 2 ? filePath.replace(/^[^\\]+\\/, '').replace(/\\[^\\]+$/, '') : '').replace(/\\/g, '/'));
+
+                if (!await exists(fileFold))
+                    await mkdir(fileFold, { recursive: true });
+
+                const success = await backoffDownload(
+                    assetFileUrl,
+                    dlPath,
+                    (pr) => {
+                        totbyts += pr.progress;
+                        assetDLProgress[assetType][assetRelpath] = 100 * (totbyts / (assetSize * 1024 * 1024));
+                        assetDLProgress = assetDLProgress;
+                    }
+                );
+
+                if (!success) {
+                    await remove(assetDownloadFolder, { recursive: true });
+                    delete assetDLProgress[assetType][assetRelpath];
+                    return;
+                }
+
+                fileNames.push(localFileName);
+            }
+
+            assetDLProgress[assetType][assetRelpath] = 0;
+            await Promise.all(fileNames.map(async (fn, idx) => {
+                const strPath = (await path.join(assetDownloadFolder, fn)).replace(/\\/g, '/');
+                const destPath = (await path.join(baseDirPath, fn)).replace(/\\/g, '/');
+                const fileFold = await path.dirname(destPath);
+
+                if (!await exists(fileFold))
+                    await mkdir(fileFold, { recursive: true });
+
+                await copyFile(strPath, destPath);
+                assetDLProgress[assetType][assetRelpath] = (idx + 1) * (100 / fileNames.length);
+            }));
+
+            await remove(assetDownloadFolder, { recursive: true });
         }
-
-        assetDLProgress[assetType][assetRelpath] = 0;
-        await Promise.all(fileNames.map(async (fn, idx) => {
-            const strPath = (await path.join(assetDownloadFolder, fn)).replace(/\\/g, '/');
-            const destPath = ((assetType === "Skins") ? await path.join(assetFullPath, fn) : await path.join(baseDirPath, fn)).replace(/\\/g, '/');
-            const fileFold = await path.dirname(destPath);
-
-            fold_exists = await exists(fileFold);
-            if (!fold_exists)
-                await mkdir(fileFold, {recursive: true});
-
-            await copyFile(strPath, destPath);
-            assetDLProgress[assetType][assetRelpath] = (idx + 1) * (100 / fileNames.length);
-        }));
-
-        // Clean after pooping
-        await remove(assetDownloadFolder, { recursive: true });
 
         if (assetNb === undefined)
             TriggerSuccess(get(_)('assets.success.download_complete'));
@@ -289,7 +354,8 @@
             assetVersion: assetVersion
         };
 
-        assetDLProgress[assetType][assetRelpath] = undefined;
+        delete assetDLProgress[assetType][assetRelpath];
+        assetDLProgress = assetDLProgress;
     }
 
     onMount(async () => {

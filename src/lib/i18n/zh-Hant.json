@@ -120,7 +120,10 @@
       "characters":  "角色",
       "puchicharas": "小角色"
     },
-    "error":   { "scanning": "仍在掃描本機資料夾，因此無法下載{type}" },
+    "error": {
+      "scanning":      "仍在掃描本機資料夾，因此無法下載{type}",
+      "zip_not_found": "在伺服器上找不到主題包。請在5分鐘後重試。如果問題仍然存在，請聯絡OpenTaiko團隊。"
+    },
     "success": {
       "all_up_to_date":    "所有{type}皆是最新版",
       "download_complete": "下載完成",

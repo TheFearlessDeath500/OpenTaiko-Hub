@@ -120,7 +120,10 @@
       "characters":  "角色",
       "puchicharas": "迷你角色"
     },
-    "error":   { "scanning": "正在扫描本地文件夹，无法下载{type}" },
+    "error": {
+      "scanning":      "正在扫描本地文件夹，无法下载{type}",
+      "zip_not_found": "在服务器上找不到皮肤包。请在5分钟后重试。如果问题仍然存在，请联系OpenTaiko团队。"
+    },
     "success": {
       "all_up_to_date":    "所有{type}均已是最新",
       "download_complete": "下载完成",
