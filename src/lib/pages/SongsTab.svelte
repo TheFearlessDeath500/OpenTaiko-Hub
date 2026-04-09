@@ -11,6 +11,9 @@
 
     import { md5 } from 'js-md5';
 
+    import { _ } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
     import { GetRootPath } from "../utils/path.js";
 
     // Song management
@@ -219,7 +222,7 @@
 
     const DownloadDisplayedSongs = async () => {
         if (scanning === true) {
-            TriggerError("Cannot download songs while local folders are being scanned");
+            TriggerError(get(_)('songs.error.scanning'));
             return ;
         }
 
@@ -228,7 +231,7 @@
         const songCount = filteredSInfo.length;
 
         if (songCount === 0) {
-            TriggerSuccess("All songs are already up-to-date");
+            TriggerSuccess(get(_)('songs.success.all_up_to_date'));
             return ;
         }
 
@@ -362,9 +365,9 @@
         await remove(chartDownloadFolder, { recursive: true });
 
         if (songNb === undefined)
-            TriggerSuccess('Download complete');
+            TriggerSuccess(get(_)('songs.success.download_complete'));
         else
-            TriggerSuccess(`Downloaded song ${songNb} out of ${songTotal}`);
+            TriggerSuccess(get(_)('songs.success.download_nb', { values: { nb: songNb, total: songTotal } }));
 
         //crawlSongs();
         currentSongs[songObj.uniqueId] = {
@@ -387,15 +390,15 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th><button on:click={() => SortSongsByColumn("name")}>Song name</button></th>
-				<th><button on:click={() => SortSongsByColumn("genre")}>Folder</button></th>
+				<th><button on:click={() => SortSongsByColumn("name")}>{$_('songs.col.name')}</button></th>
+				<th><button on:click={() => SortSongsByColumn("genre")}>{$_('songs.col.folder')}</button></th>
 				<th colspan="5" class="w-1/5">Difficulties</th>
-				<th><button on:click={() => SortSongsByColumn("size")}>Size</button></th>
-				<th class="w-1/6">Status</th>
+				<th><button on:click={() => SortSongsByColumn("size")}>{$_('songs.col.size')}</button></th>
+				<th class="w-1/6">{$_('songs.col.status')}</th>
 			</tr>
 			<tr>
-				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder="Song search..." bind:value={searchSong}></th>
-				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder="Folder search..." bind:value={searchGenre}></th>
+				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder={$_('songs.filter.song')} bind:value={searchSong}></th>
+				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder={$_('songs.filter.folder')} bind:value={searchGenre}></th>
 				<th><button on:click={() => SortSongsByColumn("ez")}>EZ</button></th>
 				<th><button on:click={() => SortSongsByColumn("nm")}>NM</button></th>
 				<th><button on:click={() => SortSongsByColumn("hd")}>HD</button></th>
@@ -406,7 +409,7 @@
 					{#if songCountProgressBar !== null}
 					<ProgressBar bind:value={songCountProgressBar} max={100} />
 					{:else}
-					<button type="button" on:click={DownloadDisplayedSongs} class="button-green button-main"><i class="fa-solid fa-download"></i> Bulk download</button>
+					<button type="button" on:click={DownloadDisplayedSongs} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('songs.button.bulk_download')}</button>
 					{/if}
 				</th>
 			</tr>
@@ -449,34 +452,34 @@
 				<!-- songDLProgress[songObj.uniqueId] -->
 				{#if scanning === true}
 				<td>
-					<p>Scanning...</p>
+					<p>{$_('songs.status.scanning')}</p>
 				</td>
 				{:else if !Object.keys(currentSongs).includes(songInfo.uniqueId)}
 				<td>
-					<p>Not downloaded</p>
+					<p>{$_('songs.status.not_downloaded')}</p>
 					<br />
 					{#if songDLProgress[songInfo.uniqueId] === undefined}
-					<button type="button" on:click={DownloadSong(songInfo, null)} class="button-green button-main"><i class="fa-solid fa-download"></i> Download</button>
+					<button type="button" on:click={DownloadSong(songInfo, null)} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('songs.button.download')}</button>
 					{:else}
 					<ProgressBar bind:value={songDLProgress[songInfo.uniqueId]} max={100} />
 					{/if}
 				</td>
 				{:else if currentSongs[songInfo.uniqueId].chartMD5 === songInfo.tjaMD5}
 				<td>
-					<p>Up-to-date</p>
+					<p>{$_('songs.status.up_to_date')}</p>
                     <br />
                     {#if songDLProgress[songInfo.uniqueId] === undefined}
-					<button type="button" on:click={DownloadSong(songInfo, currentSongs[songInfo.uniqueId])} class="button-gray button-main"><i class="fa-solid fa-download"></i> Redownload</button>
+					<button type="button" on:click={DownloadSong(songInfo, currentSongs[songInfo.uniqueId])} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('songs.button.redownload')}</button>
 					{:else}
 					<ProgressBar bind:value={songDLProgress[songInfo.uniqueId]} max={100} />
 					{/if}
 				</td>
 				{:else}
 				<td>
-					<p>Outdated</p>
+					<p>{$_('songs.status.outdated')}</p>
 					<br />
 					{#if songDLProgress[songInfo.uniqueId] === undefined}
-					<button type="button" on:click={DownloadSong(songInfo, currentSongs[songInfo.uniqueId])} class="button-green button-main"><i class="fa-solid fa-download"></i> Update</button>
+					<button type="button" on:click={DownloadSong(songInfo, currentSongs[songInfo.uniqueId])} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('songs.button.update')}</button>
 					{:else}
 					<ProgressBar bind:value={songDLProgress[songInfo.uniqueId]} max={100} />
 					{/if}

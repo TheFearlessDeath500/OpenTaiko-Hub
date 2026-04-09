@@ -1,5 +1,6 @@
 <script>
     export let songInfo;
+	import { _ } from 'svelte-i18n';
 
 	let time = 0;
 	let duration = 0;
@@ -29,7 +30,7 @@
 	
 	<button
 		class="play"
-		aria-label={paused ? 'play' : 'pause'}
+		aria-label={paused ? $_('player.play') : $_('player.pause')}
 		on:click={() => paused = !paused}
 	></button>
 

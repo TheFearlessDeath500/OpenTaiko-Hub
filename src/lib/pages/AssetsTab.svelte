@@ -9,6 +9,8 @@
     const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload } = getContext('toast');
 
     import { GetRootPath } from "../utils/path.js";
+    import { _ } from 'svelte-i18n';
+    import { get } from 'svelte/store';
 
 
     import AssetStatusCell from '$lib/components/AssetStatusCell.svelte';
@@ -145,7 +147,8 @@
 
     const DownloadDisplayedAssets = async (assetType) => {
         if (assetScanning === true) {
-            TriggerError(`Cannot download ${assetType} while local folders are being scanned`);
+            const translatedType = get(_)(`assets.type.${assetType.toLowerCase()}`);
+            TriggerError(get(_)('assets.error.scanning', { values: { type: translatedType } }));
             return ;
         }
 
@@ -162,7 +165,8 @@
         const assetCount = AInfo.length;
 
         if (assetCount === 0) {
-            TriggerSuccess(`All ${assetType} are already up-to-date`);
+            const translatedType = get(_)(`assets.type.${assetType.toLowerCase()}`);
+            TriggerSuccess(get(_)('assets.success.all_up_to_date', { values: { type: translatedType } }));
             return ;
         }
 
@@ -274,9 +278,11 @@
         await remove(assetDownloadFolder, { recursive: true });
 
         if (assetNb === undefined)
-            TriggerSuccess('Download complete');
-        else
-            TriggerSuccess(`Downloaded ${assetType} ${assetNb} out of ${assetTotal}`);
+            TriggerSuccess(get(_)('assets.success.download_complete'));
+        else {
+            const translatedType = get(_)(`assets.type.${assetType.toLowerCase()}`);
+            TriggerSuccess(get(_)('assets.success.download_nb', { values: { type: translatedType, nb: assetNb, total: assetTotal } }));
+        }
 
         currentAssets[assetType][assetRelpath] = {
             assetFolderName: assetRelpath,
@@ -304,15 +310,15 @@
 	>
 	<Tab bind:group={currentAsset} name="tab1" value={0}>
 		<svelte:fragment slot="lead"><i class="fa-solid fa-palette"></i></svelte:fragment>
-		<span>Skins</span>
+		<span>{$_('assets.tab.skins')}</span>
 	</Tab>
 	<Tab bind:group={currentAsset} name="tab2" value={1}>
 		<svelte:fragment slot="lead"><i class="fa-solid fa-user"></i></svelte:fragment>
-		<span>Characters</span>
+		<span>{$_('assets.tab.characters')}</span>
 	</Tab>
 	<Tab bind:group={currentAsset} name="tab3" value={2}>
 		<svelte:fragment slot="lead"><i class="fa-solid fa-circle-half-stroke"></i></svelte:fragment>
-		<span>Puchicharas</span>
+		<span>{$_('assets.tab.puchicharas')}</span>
 	</Tab>
 	<!-- ... -->
 </TabGroup>
@@ -320,12 +326,12 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th>Asset</th>
-				<th>Version</th>
-				<th>Resolution</th>
-				<th>Author</th>
-				<th>Size</th>
-				<th class="w-1/6">Status</th>
+				<th>{$_('assets.col.asset')}</th>
+				<th>{$_('assets.col.version')}</th>
+				<th>{$_('assets.col.resolution')}</th>
+				<th>{$_('assets.col.author')}</th>
+				<th>{$_('assets.col.size')}</th>
+				<th class="w-1/6">{$_('assets.col.status')}</th>
 			</tr>
 			<tr>
 				<th></th>
@@ -339,7 +345,7 @@
 					{#if assetCountProgressBar["Skins"] !== null}
 					<ProgressBar bind:value={assetCountProgressBar["Skins"]} max={100} />
 					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Skins")} class="button-green button-main"><i class="fa-solid fa-download"></i> Bulk download</button>
+					<button type="button" on:click={() => DownloadDisplayedAssets("Skins")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
 					{/if}
 					{/if}
 					<!-- Characters -->
@@ -347,7 +353,7 @@
 					{#if assetCountProgressBar["Characters"] !== null}
 					<ProgressBar bind:value={assetCountProgressBar["Characters"]} max={100} />
 					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Characters")} class="button-green button-main"><i class="fa-solid fa-download"></i> Bulk download</button>
+					<button type="button" on:click={() => DownloadDisplayedAssets("Characters")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
 					{/if}
 					{/if}
 					<!-- Puchicharas -->
@@ -355,7 +361,7 @@
 					{#if assetCountProgressBar["Puchicharas"] !== null}
 					<ProgressBar bind:value={assetCountProgressBar["Puchicharas"]} max={100} />
 					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Puchicharas")} class="button-green button-main"><i class="fa-solid fa-download"></i> Bulk download</button>
+					<button type="button" on:click={() => DownloadDisplayedAssets("Puchicharas")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
 					{/if}
 					{/if}
 				</th>

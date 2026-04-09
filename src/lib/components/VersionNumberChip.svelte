@@ -1,9 +1,10 @@
 <script>
+    import { _ } from 'svelte-i18n';
 
     export let LatestVersion = "Unknown";
     export let CurrentVersion = "Unknown";
     export let Strictness = "Error";
-    
+
     const checkSkinCompatibility = (version1, version2) => {
         const regex = /^\d+\.\d+\.\d+\.\d+$/; // Match versions in the form <main>.<major>.<minor>.<patch>
 
@@ -24,13 +25,13 @@
     {:else}
         {#if Strictness === "Error"}
             <!-- Error -->
-            <p class="badge bg-red-100 text-red-800" title="Not compatible with the current OpenTaiko version">{LatestVersion}</p>
+            <p class="badge bg-red-100 text-red-800" title={$_('version_chip.incompatible')}>{LatestVersion}</p>
         {:else}
             <!-- Warning -->
-            <p class="badge bg-yellow-100 text-yellow-800" title="Might be outdated, use with caution">{LatestVersion}</p>
+            <p class="badge bg-yellow-100 text-yellow-800" title={$_('version_chip.outdated')}>{LatestVersion}</p>
         {/if}
     {/if}
-    
+
     <style>
 
     </style>

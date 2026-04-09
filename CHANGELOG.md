@@ -3,6 +3,11 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.15] - 2026-04-09 (Alpha)
+
+- [i18n] Multilanguage support (comes with English, Japanese, and Chinese (Simplified and Traditional))
+- [Enhancement] Keep theme settings persistant between OpenTaiko Hub instances and after updates/reinstallation
+
 ## [0.1.14] - 2026-04-08 (Alpha)
 
 - [Enhancement] Faster local songs status processing for users with lots of custom charts in their song folder.

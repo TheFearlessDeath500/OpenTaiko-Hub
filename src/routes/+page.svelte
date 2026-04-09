@@ -9,6 +9,8 @@
     const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload, GetOS } = getContext('toast');
 
     import { GetRootPath } from "../lib/utils/path.js";
+    import { _ } from 'svelte-i18n';
+    import { get } from 'svelte/store';
 
     import { path } from '@tauri-apps/api';
     import { invoke } from '@tauri-apps/api/core';
@@ -54,7 +56,7 @@
             const appPath = await path.join(res, "./OpenTaiko/OpenTaiko");
             await invoke('execute_external_app', { os, path: appPath });
         } catch (error) {
-            TriggerError('Error executing app:' + error);
+            TriggerError(get(_)('home.error.launch', { values: { error } }));
         }
     }
 
@@ -90,7 +92,7 @@
 
             return asset.browser_download_url; //browser_download_url;
         } catch (err) {
-            TriggerError(`Failed to fetch latest OpenTaiko release: ${err}`);
+            TriggerError(get(_)('home.error.fetch_release', { values: { error: err } }));
             return null;
         }
     }
@@ -125,7 +127,7 @@
 
     const DownloadOpenTaiko = async () => {
         if (downloadBusy === true) {
-            TriggerError(`Currently already downloading`);
+            TriggerError(get(_)('home.error.already_downloading'));
             return;
         }
 
@@ -162,7 +164,7 @@
                 return ;
             }
 
-            TriggerSuccess('Download complete, now unzipping...');
+            TriggerSuccess(get(_)('home.success.unzipping'));
 
             // Prepare the optk build folder if doesn't exist
             const optk_folder = await path.join(res, "./OpenTaiko");
@@ -182,7 +184,7 @@
 
             unlisten();
 
-            TriggerSuccess('Unzip complete, now installing...');
+            TriggerSuccess(get(_)('home.success.installing'));
 
             // Move unzipped files to OpenTaiko folder
             progress = undefined;
@@ -205,11 +207,11 @@
             await remove(dled);
             await remove(source_folder, { recursive: true });
 
-            TriggerSuccess('Download and installation complete');
+            TriggerSuccess(get(_)('home.success.installed'));
 
             
         } catch (err) {
-            TriggerError(`Failed to download OpenTaiko: ${err}`)
+            TriggerError(get(_)('home.error.download_failed', { values: { error: err } }))
         }
         await TryFetchingCurrentVersion();
         downloadBusy = false;
@@ -227,7 +229,7 @@
             latestVersion = data.tag_name; // Latest tag version number
         } catch (err) {
             latestVersionErrorFound = true;
-            TriggerError(`Failed to fetch latest OpenTaiko release: ${err}`);
+            TriggerError(get(_)('home.error.fetch_release', { values: { error: err } }));
         }
     }
 
@@ -256,7 +258,7 @@
             const appPath = await path.join(res, "./OpenTaiko");
             await openPath(appPath);
         } catch (error) {
-            TriggerError('Error opening the folder:' + error);
+            TriggerError(get(_)('home.error.launch', { values: { error } }));
         }
     }
 
@@ -279,41 +281,41 @@
                 <AppRailAnchor href="/" >(icon)</AppRailAnchor>
             </svelte:fragment> -->
             <!-- --- -->
-            <AppRailTile bind:group={currentTile} name="tile-1" value={0} title="Manage OpenTaiko and the OpenTaiko Hub.">
+            <AppRailTile bind:group={currentTile} name="tile-1" value={0} title={$_('nav.tooltip.home')}>
                 <svelte:fragment slot="lead"><i class="fa-solid fa-home"></i></svelte:fragment>
-                <span>Home</span>
+                <span>{$_('nav.home')}</span>
             </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-2" value={1} title="Update your OpenTaiko songs and download the latest ones.">
+            <AppRailTile bind:group={currentTile} name="tile-2" value={1} title={$_('nav.tooltip.songlist')}>
                 <svelte:fragment slot="lead"><i class="fa-solid fa-music"></i></svelte:fragment>
-                <span>Songlist</span>
+                <span>{$_('nav.songlist')}</span>
             </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-3" value={2} title="Get the newest OpenTaiko skins and related assets.">
+            <AppRailTile bind:group={currentTile} name="tile-3" value={2} title={$_('nav.tooltip.skins')}>
                 <svelte:fragment slot="lead"><i class="fa-solid fa-pen-ruler"></i></svelte:fragment>
-                <span>Skins</span>
+                <span>{$_('nav.skins')}</span>
             </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-4" value={3} title="Tools that can improve your OpenTaiko experience.">
+            <AppRailTile bind:group={currentTile} name="tile-4" value={3} title={$_('nav.tooltip.tools')}>
                 <svelte:fragment slot="lead"><i class="fa-solid fa-screwdriver-wrench"></i></svelte:fragment>
-                <span>Tools</span>
+                <span>{$_('nav.tools')}</span>
             </AppRailTile>
-            <AppRailTile bind:group={currentTile} name="tile-5" value={4} title="???">
+            <AppRailTile bind:group={currentTile} name="tile-5" value={4} title={$_('nav.tooltip.secrets')}>
                 <svelte:fragment slot="lead"><i class="fa-solid fa-question"></i></svelte:fragment>
-                <span>Secrets</span>
+                <span>{$_('nav.secrets')}</span>
             </AppRailTile>
             <!-- Trail -->
             <svelte:fragment slot="trail">
-                <AppRailTile bind:group={currentTile} name="tile-6" value={5} title="To consult the changelogs, the documentation, or for troubleshooting.">
+                <AppRailTile bind:group={currentTile} name="tile-6" value={5} title={$_('nav.tooltip.information')}>
                     <svelte:fragment slot="lead"><i class="fa-regular fa-file-lines"></i></svelte:fragment>
-                    <span>Information</span>
+                    <span>{$_('nav.information')}</span>
                 </AppRailTile>
-                <AppRailTile bind:group={currentTile} name="tile-7" value={6} title="Check out OpenTaiko's socials and websites!">
+                <AppRailTile bind:group={currentTile} name="tile-7" value={6} title={$_('nav.tooltip.links')}>
                     <svelte:fragment slot="lead"><i class="fa-solid fa-globe"></i></svelte:fragment>
-                    <span>Links</span>
+                    <span>{$_('nav.links')}</span>
                 </AppRailTile>
-                <AppRailTile bind:group={currentTile} name="tile-8" value={7} title="Change the theme of the OpenTaiko Hub.">
+                <AppRailTile bind:group={currentTile} name="tile-8" value={7} title={$_('nav.tooltip.themes')}>
                     <svelte:fragment slot="lead"><i class="fa-solid fa-palette"></i></svelte:fragment>
-                    <span>OpTk Hub Themes</span>
+                    <span>{$_('nav.themes')}</span>
                 </AppRailTile>
-				<AppRailAnchor href="https://github.com/OpenTaiko/OpenTaiko-Hub" target="_blank" title="View the OpenTaiko Hub source code." class="sidebaricon">
+				<AppRailAnchor href="https://github.com/OpenTaiko/OpenTaiko-Hub" target="_blank" title={$_('nav.tooltip.github')} class="sidebaricon">
 					<i class="fa-brands fa-github text-2xl text-black dark:text-white"></i>
 				</AppRailAnchor>
 			</svelte:fragment>
@@ -327,8 +329,8 @@
 
             <section class="card w-full">
                 <div class="p-4 space-y-4">
-                    <div class="flex gap-4"> 
-                        <span class="nowrap"><b>Current OpenTaiko version:</b></span>
+                    <div class="flex gap-4">
+                        <span class="nowrap"><b>{$_('home.label.current_version')}</b></span>
                         {#if buildDetails === "Loading..."}
                             <div class="placeholder animate-pulse flex-1" />
                         {:else}
@@ -336,21 +338,21 @@
                                 <div class="progressbar"><ProgressBar bind:value={progress} max={100} /></div>
                             {:else}
                                 <span>{buildDetails}</span>
-                                <button type="button" on:click={TryFetchingCurrentVersion} class="button-blue button-main"><i class="fa-solid fa-rotate"></i> Reload</button>
+                                <button type="button" on:click={TryFetchingCurrentVersion} class="button-blue button-main"><i class="fa-solid fa-rotate"></i> {$_('home.button.reload')}</button>
                                 {#if buildDetailsNotFound === true}
-                                    <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> Download OpenTaiko</button>
+                                    <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('home.button.download')}</button>
                                 {:else if latestVersion !== optk_version && 'Loading...' !== latestVersion}
-                                    <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> Launch OpenTaiko</button>
-                                    <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> Open in Explorer</button>
-                                    <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> Update OpenTaiko</button>
+                                    <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> {$_('home.button.launch')}</button>
+                                    <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> {$_('home.button.explorer')}</button>
+                                    <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('home.button.update')}</button>
                                     {#if checkSkinCompatibility(latestVersion, optk_version) === false}
-                                        <span class="text-red-500">(Updating will require a skin update)</span>
+                                        <span class="text-red-500">{$_('home.warn.skin_update')}</span>
                                     {/if}
-                                    
+
                                 {:else}
-                                    <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> Launch OpenTaiko</button>
-                                    <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> Open in Explorer</button>
-                                    <button type="button" on:click={DownloadOpenTaiko} class="button-gray button-main"><i class="fa-solid fa-download"></i> Redownload OpenTaiko</button>
+                                    <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> {$_('home.button.launch')}</button>
+                                    <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> {$_('home.button.explorer')}</button>
+                                    <button type="button" on:click={DownloadOpenTaiko} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('home.button.redownload')}</button>
                                 {/if}
                             {/if}
                         {/if}
@@ -359,15 +361,15 @@
                 
                 <div class="p-4 space-y-4">
                     <div class="flex gap-4">
-                        <span class="nowrap"><b>Latest OpenTaiko version:</b></span>
+                        <span class="nowrap"><b>{$_('home.label.latest_version')}</b></span>
                         {#if latestVersionErrorFound === true}
-                            <span class="fetch-error"><b>Fetch Error</b></span>
-                            <button type="button" on:click={TryFetchingLatestVersion} class="button-red button-main"><i class="fa-solid fa-triangle-exclamation"></i> Retry</button>
+                            <span class="fetch-error"><b>{$_('common.fetch_error')}</b></span>
+                            <button type="button" on:click={TryFetchingLatestVersion} class="button-red button-main"><i class="fa-solid fa-triangle-exclamation"></i> {$_('home.button.retry')}</button>
                         {:else if latestVersion === "Loading..."}
                             <div class="placeholder animate-pulse flex-1" />
                         {:else}
                             <span>{latestVersion}</span>
-                            <button type="button" on:click={TryFetchingLatestVersion} class="button-blue button-main"><i class="fa-solid fa-rotate"></i> Reload</button>
+                            <button type="button" on:click={TryFetchingLatestVersion} class="button-blue button-main"><i class="fa-solid fa-rotate"></i> {$_('common.reload')}</button>
                         {/if}
                     </div>
                 </div>
@@ -376,7 +378,7 @@
                 
                 <div class="p-4 space-y-4">
                     <div class="flex gap-4">
-                    <p><b>Be sure to download a skin <span class="smalltext"><i>("Skins" tab)</i></span> and songs <span class="smalltext"><i>("Songlist" tab)</i></span> before first starting the game!</b><br><b>Current OS:</b> {optk_OS}</p>
+                    <p><b>{$_('home.hint.first_start')}</b><br><b>{$_('home.label.current_os')}</b> {optk_OS}</p>
                     </div>
                 </div>
             </section>

@@ -1,22 +1,25 @@
 <script>
     import { onMount } from 'svelte';
-    import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+    import { readTextFile, writeTextFile, mkdir } from '@tauri-apps/plugin-fs';
 
     import { getContext } from 'svelte';
-    const { TriggerError, TriggerWarning, TriggerSuccess } = getContext('toast');
+    const { TriggerWarning, TriggerSuccess } = getContext('toast');
 
-    import { GetRootPath } from "$lib/utils/path.js";
+    import { GetPreferencesPath } from "$lib/utils/path.js";
 
     import { path } from '@tauri-apps/api';
 
     import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
     import { setModeCurrent } from '@skeletonlabs/skeleton';
 
+    import { _ , locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
     // Debug mode code
     let debugMode = false;
 
     const DisableDebugMode = async () => {
-        TriggerSuccess('<b>Debug mode has been disabled.</b><br><p class="smalltext">(Note: You need to change the "debugMode" value to fully disable debug mode!)</p>');
+        TriggerSuccess(get(_)('themes.success.debug_disabled'));
         debugMode = false;
     }
 
@@ -27,18 +30,18 @@
         const themevalue = themeselect.value;
         const themetarget = document.getElementById('themetarget');
         const themedata = themetarget.getAttribute('data-theme');
-        
+
         if (themedata == themevalue) {
-            TriggerWarning("DEBUG: Selected theme is the same as current theme.");
-        } 
+            TriggerWarning(get(_)('themes.warn.same_theme_debug'));
+        }
         else {
             currentTheme = themevalue;
             document.body.dataset.theme = themevalue;
             console.log("DEBUG: theme has been changed")
         }
     }
-    
-    const ThemeModeChangerDebug = async () => { 
+
+    const ThemeModeChangerDebug = async () => {
         if (currentThemeModeDebug === "dark") {
             setModeCurrent(false);
             console.log("DEBUG: mode has been changed to dark")
@@ -53,27 +56,20 @@
     export let currentTile = 0;
 
     let currentTheme = 'skeleton';
-    let themeDetails = 'dark';
-    let themeSettingsNotFound = false;
-    let themeModeSettingsNotFound = false;
 
     const TryFetchingCurrentTheme = async () => {
+        const prefsDir = await GetPreferencesPath();
+        await mkdir(prefsDir, { recursive: true });
+        const themeFilePath = await path.join(prefsDir, 'theme.json');
         try {
-            themeSettingsNotFound = false;
-            const filePathTheme = './settings/theme.json';
-            const res = await GetRootPath();
-            const themeFilePath = await path.join(res,filePathTheme)
             const fileContentTheme = await readTextFile(themeFilePath);
             const jsonDataTheme = JSON.parse(fileContentTheme);
-            currentTheme = jsonDataTheme.theme;
-            themeDetails = `${currentTheme}`;
-        } catch (err) {
-            themeSettingsNotFound = true;
+            currentTheme = jsonDataTheme.theme ?? 'skeleton';
+        } catch {
+            // File missing on first run — silently use default and write it
             currentTheme = 'skeleton';
-            themeDetails = "theme.json doesn't exist";
-            TriggerError("The theme.json file (or the settings folder) doesn't exist or is corrupted!<br>Please reinstall the OpenTaiko Hub to fix this.");
+            try { await writeTextFile(themeFilePath, JSON.stringify({ theme: currentTheme })); } catch {}
         }
-
         document.body.dataset.theme = currentTheme;
     }
 
@@ -82,43 +78,41 @@
         const themevalue = themeselect.value;
         const themetarget = document.getElementById('themetarget');
         const themedata = themetarget.getAttribute('data-theme');
-        
+
         if (themedata == themevalue) {
-            TriggerWarning("Selected theme is the same as current theme.");
-        } 
+            TriggerWarning(get(_)('themes.warn.same_theme'));
+        }
         else {
-            const theme_settings = ("./settings/theme.json");
+            const prefsDir = await GetPreferencesPath();
+            await mkdir(prefsDir, { recursive: true });
+            const theme_settings = await path.join(prefsDir, 'theme.json');
             const json_theme = {"theme":themevalue}
             await writeTextFile(theme_settings, JSON.stringify(json_theme));
-            
+
+            currentTheme = themevalue;
             document.body.dataset.theme = themevalue;
             console.log("theme has been changed")
         }
     }
 
     // Theme mode
-    const thememode_settings = ("./settings/thememode.json");
     const json_modelight = {"thememode":"light"};
     const json_modedark = {"thememode":"dark"};
-    
+
     let currentThemeMode = 'Loading...';
-    let themeModeDetails = 'Loading...';
 
     const TryFetchingCurrentThemeMode = async () => {
+        const prefsDir = await GetPreferencesPath();
+        await mkdir(prefsDir, { recursive: true });
+        const modeFilePath = await path.join(prefsDir, 'thememode.json');
         try {
-            themeModeSettingsNotFound = false;
-            const filePathMode = './settings/thememode.json';
-            const res = await GetRootPath();
-            const modeFilePath = await path.join(res,filePathMode)
             const fileContentMode = await readTextFile(modeFilePath);
             const jsonDataMode = JSON.parse(fileContentMode);
-            currentThemeMode = jsonDataMode.thememode;
-            themeModeDetails = `${currentThemeMode}`;
-        } catch (err) {
-            themeModeSettingsNotFound = true;
+            currentThemeMode = jsonDataMode.thememode ?? 'dark';
+        } catch {
+            // File missing on first run — silently use default and write it
             currentThemeMode = 'dark';
-            themeModeDetails = "thememode.json doesn't exist";
-            TriggerError("The thememode.json file (or the settings folder) doesn't exist or is corrupted!<br>Please reinstall the OpenTaiko Hub to fix this.");
+            try { await writeTextFile(modeFilePath, JSON.stringify({ thememode: currentThemeMode })); } catch {}
         }
 
         if (currentThemeMode === "dark") {
@@ -132,6 +126,9 @@
     }
 
     const ThemeModeChanger = async () => {
+        const prefsDir = await GetPreferencesPath();
+        await mkdir(prefsDir, { recursive: true });
+        const thememode_settings = await path.join(prefsDir, 'thememode.json');
         if (currentThemeMode === "dark") {
             await writeTextFile(thememode_settings, JSON.stringify(json_modedark));
 
@@ -140,14 +137,23 @@
         }
         else if (currentThemeMode === "light") {
             await writeTextFile(thememode_settings, JSON.stringify(json_modelight));
-            
+
             setModeCurrent(true);
             console.log("mode has been changed to light")
         }
     }
 
-    // Tooltips
-    
+    // Language persistence
+    const SaveLocale = async (selectedLocale) => {
+        try {
+            const prefsDir = await GetPreferencesPath();
+            await mkdir(prefsDir, { recursive: true });
+            const langFilePath = await path.join(prefsDir, 'language.json');
+            await writeTextFile(langFilePath, JSON.stringify({ locale: selectedLocale }));
+        } catch (err) {
+            console.error('Failed to save locale:', err);
+        }
+    }
 
     onMount(async () => {
         TryFetchingCurrentTheme();
@@ -160,11 +166,10 @@
         <div id="themetab">
             <section class="card w-full">
                 <div class="p-4 space-y-4">
-                    <h1>Select a theme.</h1>
+                    <h1>{$_('themes.title')}</h1>
                     <div class="flex gap-2">
-                        <!-- value={currentTheme} on:change={themeChanger} on:click={TryFetchingCurrentTheme} -->
                         <select id="themeselect" size="11" class="select w-full max-w-[265px]" value={currentTheme} on:change={ThemeChanger} on:click={TryFetchingCurrentTheme}>
-                            <optgroup label="OpenTaiko Hub themes:">
+                            <optgroup label={$_('themes.optgroup.optk')}>
                                 <option value="gleamingsky">Gleaming Sky</option>
                                 <option value="dashy">888</option>
                                 <option value="deceiver">Deceiver</option>
@@ -173,7 +178,7 @@
                                 <option value="optkkun">OpenTaiko-Kun</option>
                             </optgroup>
 
-                            <optgroup label="Skeleton preset themes:">
+                            <optgroup label={$_('themes.optgroup.skeleton')}>
                                 <option value="skeleton">Legacy</option>
                                 <option value="wintry">Wintry</option>
                                 <option value="modern">Modern</option>
@@ -188,58 +193,67 @@
                         </select>
 
                         <div class="card w-full p-4 rounded-container-token">
-                            <h1>Welcome to the OpenTaiko Hub Themes tab!</h1>
+                            <h1>{$_('themes.preview.title')}</h1>
 
                             <hr class="m-4">
-                                    
-                            <h2>Color preview</h2>
+
+                            <h2>{$_('themes.preview.color')}</h2>
                             <div class="grid grid-cols-1 grid-rows-3 gap-2">
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Theme accents:</span>                        
-                                        <span class="badge p-2 variant-filled-primary">Primary accent</span>
-                                        <span class="badge p-2 variant-filled-secondary">Secondary accent</span>
-                                        <span class="badge p-2 variant-filled-tertiary">Tertiary accent</span>
+                                        <span>{$_('themes.preview.accents')}</span>
+                                        <span class="badge p-2 variant-filled-primary">{$_('themes.preview.accent_primary')}</span>
+                                        <span class="badge p-2 variant-filled-secondary">{$_('themes.preview.accent_secondary')}</span>
+                                        <span class="badge p-2 variant-filled-tertiary">{$_('themes.preview.accent_tertiary')}</span>
                                     </p>
                                 </div>
 
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Button colors:</span>
-                                        <span class="badge p-2 button-blue">Action</span>
-                                        <span class="badge p-2 button-green">Download</span>
-                                        <span class="badge p-2 button-gray">Repeat</span>
-                                        <span class="badge p-2 button-red ">Destructive/Error</span>
+                                        <span>{$_('themes.preview.buttons')}</span>
+                                        <span class="badge p-2 button-blue">{$_('themes.preview.btn_action')}</span>
+                                        <span class="badge p-2 button-green">{$_('themes.preview.btn_download')}</span>
+                                        <span class="badge p-2 button-gray">{$_('themes.preview.btn_repeat')}</span>
+                                        <span class="badge p-2 button-red">{$_('themes.preview.btn_error')}</span>
                                     </p>
                                 </div>
 
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Notifications:</span>
-                                        <span class="badge p-2 variant-filled-success">Success</span>
-                                        <span class="badge p-2 variant-filled-warning">Warning</span>
-                                        <span class="badge p-2 variant-filled-error">Error</span>
+                                        <span>{$_('themes.preview.notifs')}</span>
+                                        <span class="badge p-2 variant-filled-success">{$_('themes.preview.notif_success')}</span>
+                                        <span class="badge p-2 variant-filled-warning">{$_('themes.preview.notif_warning')}</span>
+                                        <span class="badge p-2 variant-filled-error">{$_('themes.preview.notif_error')}</span>
                                     </p>
                                 </div>
                             </div>
-                                    
+
                             <hr class="m-4">
 
-                            <h2>Theme credits</h2>
-                            <p>All theme credits can be found here:</p>
+                            <h2>{$_('themes.credits.title')}</h2>
+                            <p>{$_('themes.credits.text')}</p>
                             <a href="https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md" target="_blank">https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md</a>
-                            
+
+                            <hr class="m-4">
+
+                            <h2>{$_('lang.label')}</h2>
+                            <select class="select w-full max-w-[200px]" bind:value={$locale} on:change={() => SaveLocale($locale)}>
+                                <option value="en">{$_('lang.en')}</option>
+                                <option value="ja">{$_('lang.ja')}</option>
+                                <option value="zh-Hans">{$_('lang.zh_Hans')}</option>
+                                <option value="zh-Hant">{$_('lang.zh_Hant')}</option>
+                            </select>
                         </div>
                     </div>
-                            
+
                     <RadioGroup>
                         <RadioItem bind:group={currentThemeMode} on:change={ThemeModeChanger} name="justify" value={"dark"}><i class="fa-solid fa-moon"></i></RadioItem>
                         <RadioItem bind:group={currentThemeMode} on:change={ThemeModeChanger} name="justify" value={"light"}><i class="fa-solid fa-sun"></i></RadioItem>
-                        
+
                         {#if currentThemeMode === "dark"}
-                            <p class="flex items-center px-2">Current Mode: Dark</p>
+                            <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.dark') } })}</p>
                         {:else if currentThemeMode === "light"}
-                            <p class="flex items-center px-2">Current Mode: Light</p>
+                            <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.light') } })}</p>
                         {/if}
                     </RadioGroup>
                 </div>
@@ -249,11 +263,10 @@
         <div id="themetab">
             <section class="card w-full">
                 <div class="p-4 space-y-4">
-                    <h1>Select a theme. <b>(DEBUG MODE ON)</b></h1>
+                    <h1>{$_('themes.title_debug')}</h1>
                     <div class="flex gap-2">
-                        <!-- value={currentTheme} on:change={themeChanger} on:click={TryFetchingCurrentTheme} -->
                         <select id="themeselect" size="11" class="select w-full max-w-[265px]" value={currentTheme} on:change={ThemeChangerDebug}>
-                            <optgroup label="OpenTaiko Hub themes:">
+                            <optgroup label={$_('themes.optgroup.optk')}>
                                 <option value="gleamingsky">Gleaming Sky</option>
                                 <option value="dashy">888</option>
                                 <option value="deceiver">Deceiver</option>
@@ -262,7 +275,7 @@
                                 <option value="optkkun">OpenTaiko-Kun</option>
                             </optgroup>
 
-                            <optgroup label="Skeleton preset themes:">
+                            <optgroup label={$_('themes.optgroup.skeleton')}>
                                 <option value="skeleton">Legacy</option>
                                 <option value="wintry">Wintry</option>
                                 <option value="modern">Modern</option>
@@ -277,62 +290,72 @@
                         </select>
 
                         <div class="card w-full p-4 rounded-container-token">
-                            <h1>Welcome to the OpenTaiko Hub Themes tab!</h1>
+                            <h1>{$_('themes.preview.title')}</h1>
 
                             <hr class="m-4">
-                                    
-                            <h2>Color preview</h2>
+
+                            <h2>{$_('themes.preview.color')}</h2>
                             <div class="grid grid-cols-1 grid-rows-3 gap-2">
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Theme accents:</span>                        
-                                        <span class="badge p-2 variant-filled-primary">Primary accent</span>
-                                        <span class="badge p-2 variant-filled-secondary">Secondary accent</span>
-                                        <span class="badge p-2 variant-filled-tertiary">Tertiary accent</span>
+                                        <span>{$_('themes.preview.accents')}</span>
+                                        <span class="badge p-2 variant-filled-primary">{$_('themes.preview.accent_primary')}</span>
+                                        <span class="badge p-2 variant-filled-secondary">{$_('themes.preview.accent_secondary')}</span>
+                                        <span class="badge p-2 variant-filled-tertiary">{$_('themes.preview.accent_tertiary')}</span>
                                     </p>
                                 </div>
 
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Button colors:</span>
-                                        <span class="badge p-2 button-blue">Action</span>
-                                        <span class="badge p-2 button-green">Download</span>
-                                        <span class="badge p-2 button-gray">Repeat</span>
-                                        <span class="badge p-2 button-red ">Destructive/Error</span>
+                                        <span>{$_('themes.preview.buttons')}</span>
+                                        <span class="badge p-2 button-blue">{$_('themes.preview.btn_action')}</span>
+                                        <span class="badge p-2 button-green">{$_('themes.preview.btn_download')}</span>
+                                        <span class="badge p-2 button-gray">{$_('themes.preview.btn_repeat')}</span>
+                                        <span class="badge p-2 button-red">{$_('themes.preview.btn_error')}</span>
                                     </p>
                                 </div>
 
                                 <div class="flex">
                                     <p class="flex gap-1 badge card p-2">
-                                        <span>Notifications:</span>
-                                        <span class="badge p-2 variant-filled-success">Success</span>
-                                        <span class="badge p-2 variant-filled-warning">Warning</span>
-                                        <span class="badge p-2 variant-filled-error">Error</span>
+                                        <span>{$_('themes.preview.notifs')}</span>
+                                        <span class="badge p-2 variant-filled-success">{$_('themes.preview.notif_success')}</span>
+                                        <span class="badge p-2 variant-filled-warning">{$_('themes.preview.notif_warning')}</span>
+                                        <span class="badge p-2 variant-filled-error">{$_('themes.preview.notif_error')}</span>
                                     </p>
                                 </div>
                             </div>
-                                    
+
                             <hr class="m-4">
 
-                            <h2>Theme credits</h2>
-                            <p>All theme credits can be found here:</p>
+                            <h2>{$_('themes.credits.title')}</h2>
+                            <p>{$_('themes.credits.text')}</p>
                             <a href="https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md" target="_blank">https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md</a>
+
+                            <hr class="m-4">
+
+                            <h2>{$_('lang.label')}</h2>
+                            <select class="select w-full max-w-[200px]" bind:value={$locale} on:change={() => SaveLocale($locale)}>
+                                <option value="en">{$_('lang.en')}</option>
+                                <option value="ja">{$_('lang.ja')}</option>
+                                <option value="zh-Hans">{$_('lang.zh_Hans')}</option>
+                                <option value="zh-Hant">{$_('lang.zh_Hant')}</option>
+                            </select>
                         </div>
                     </div>
-                            
+
                     <div class="flex gap-2">
                         <RadioGroup>
                             <RadioItem bind:group={currentThemeModeDebug} on:change={ThemeModeChangerDebug} name="justify" value={"dark"}><i class="fa-solid fa-moon"></i></RadioItem>
                             <RadioItem bind:group={currentThemeModeDebug} on:change={ThemeModeChangerDebug} name="justify" value={"light"}><i class="fa-solid fa-sun"></i></RadioItem>
-                            
+
                             {#if currentThemeModeDebug === "dark"}
-                                <p class="flex items-center px-2">Current Mode: Dark</p>
+                                <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.dark') } })}</p>
                             {:else if currentThemeModeDebug === "light"}
-                                <p class="flex items-center px-2">Current Mode: Light</p>
+                                <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.light') } })}</p>
                             {/if}
                         </RadioGroup>
 
-                        <button type="button" on:click={DisableDebugMode} class="button-red button-main"><i class="fa-solid fa-code"></i> Disable debug mode</button>
+                        <button type="button" on:click={DisableDebugMode} class="button-red button-main"><i class="fa-solid fa-code"></i> {$_('themes.debug.disable_btn')}</button>
                     </div>
                 </div>
             </section>

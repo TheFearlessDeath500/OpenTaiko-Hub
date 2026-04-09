@@ -1,4 +1,4 @@
-import { resourceDir, documentDir } from '@tauri-apps/api/path';
+import { resourceDir, documentDir, appConfigDir } from '@tauri-apps/api/path';
 import { type } from '@tauri-apps/plugin-os';
 
 const GetOS = async () => {
@@ -15,6 +15,10 @@ const GetOS = async () => {
         default:
             return "Unsupported";
     }
+}
+
+export const GetPreferencesPath = async () => {
+    return await appConfigDir();
 }
 
 export const GetRootPath = async () => {

@@ -6,6 +6,9 @@
     import { getContext } from 'svelte';
     const { TriggerError, TriggerWarning } = getContext('toast');
 
+    import { _ } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
     // Version Number
     let VersionHub = "Loading..."
 
@@ -16,8 +19,8 @@
     }
 
     // Check version number
-    const repoOwner = 'OpenTaiko';//'OpenTaiko'; 
-    const repoName = 'OpenTaiko-Hub';//OpenTaiko-Dev-Mirror'; 
+    const repoOwner = 'OpenTaiko';//'OpenTaiko';
+    const repoName = 'OpenTaiko-Hub';//OpenTaiko-Dev-Mirror';
     let latestVersion = 'Loading...';
     let latestVersionErrorFound = false;
 
@@ -31,22 +34,22 @@
             }
             const data = await response.json();
             latestVersion = data.tag_name; // Latest tag version number
-            
+
             if (VersionHub == latestVersion) {
                 console.log("Hub version is up to date!");
-            } 
+            }
             else if (VersionHub != latestVersion) {
                 console.log("Hub version is out of date, or newer than the current version on GitHub.");
-                TriggerWarning('Your OpenTaiko Hub installation is out of date.<br>Please click the "Update OpenTaiko Hub" button.'); 
+                TriggerWarning(get(_)('hub.warn.outdated_toast'));
             }
         } catch (err) {
             latestVersionErrorFound = true;
-            TriggerError(`Failed to fetch latest OpenTaiko Hub release: ${err}`);
+            TriggerError(get(_)('hub.error.fetch', { values: { error: err } }));
         }
     }
 
-    const UpdateHub = async () => {window.open("https://github.com/OpenTaiko/OpenTaiko-Hub/releases/latest");} 
-    
+    const UpdateHub = async () => {window.open("https://github.com/OpenTaiko/OpenTaiko-Hub/releases/latest");}
+
     onMount(async () => {
         getHubVersion()
         await TryFetchingLatestVersion();
@@ -58,16 +61,16 @@
     <div class="p-4 space-y-4">
         <div class="flex gap-4">
             {#if latestVersionErrorFound === true}
-                <span>Failed to check for updates.</span>
-                <span class="fetch-error"><b>Fetch Error</b></span>
-                <button type="button" on:click={TryFetchingLatestVersion} class="button-red button-main"><i class="fa-solid fa-triangle-exclamation"></i> Retry</button>
+                <span>{$_('hub.status.fetch_failed')}</span>
+                <span class="fetch-error"><b>{$_('common.fetch_error')}</b></span>
+                <button type="button" on:click={TryFetchingLatestVersion} class="button-red button-main"><i class="fa-solid fa-triangle-exclamation"></i> {$_('common.retry')}</button>
             {:else if latestVersion === "Loading..."}
-                <span>Checking for updates...</span>
+                <span>{$_('hub.status.checking')}</span>
             {:else if VersionHub != latestVersion}
-                <span><b>Your OpenTaiko Hub installation is out of date.</b></span>
-                <button type="button" on:click={UpdateHub} class="button-green button-main"><i class="fa-solid fa-download"></i> Update OpenTaiko Hub to {latestVersion.slice(1)}</button>
+                <span><b>{$_('hub.status.outdated')}</b></span>
+                <button type="button" on:click={UpdateHub} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('hub.button.update', { values: { version: latestVersion.slice(1) } })}</button>
             {:else}
-                <span><b>Your OpenTaiko Hub installation is up to date!</b></span>
+                <span><b>{$_('hub.status.up_to_date')}</b></span>
             {/if}
         </div>
     </div>

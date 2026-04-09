@@ -4,6 +4,7 @@
     import { TabGroup, Tab } from '@skeletonlabs/skeleton';
     import { getContext } from 'svelte';
     const { GetOS } = getContext('toast');
+    import { _ } from 'svelte-i18n';
 
     // Tools
     import ToolCard from '$lib/components/ToolCard.svelte';
@@ -21,7 +22,7 @@
 
 </script>
 
-<TabGroup 
+<TabGroup
 	justify="justify-center"
 	active="variant-filled-primary"
 	hover="hover:variant-soft-primary"
@@ -32,15 +33,15 @@
 	>
 	<Tab bind:group={currentTab} name="tab1" value={0}>
 		<svelte:fragment slot="lead"><i class="fa-regular fa-file-audio"></i></svelte:fragment>
-		<span>Charting</span>
+		<span>{$_('tools.tab.charting')}</span>
 	</Tab>
 	<Tab bind:group={currentTab} name="tab2" value={1}>
 		<svelte:fragment slot="lead"><i class="fa-solid fa-music"></i></svelte:fragment>
-		<span>Lyrics</span>
+		<span>{$_('tools.tab.lyrics')}</span>
 	</Tab>
 	<Tab bind:group={currentTab} name="tab3" value={2}>
 		<svelte:fragment slot="lead"><i class="fa-solid fa-envelope-open-text"></i></svelte:fragment>
-		<span>Submit your content!</span>
+		<span>{$_('tools.tab.submit')}</span>
 	</Tab>
 	<!-- ... -->
 </TabGroup>
@@ -48,53 +49,53 @@
 {#if currentTab === 0}
 	<div class="content">
 		{#if optk_OS === "Win"}
-			<h1 class="mb-3">Primary resources:</h1>
+			<h1 class="mb-3">{$_('tools.charting.primary')}</h1>
 			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
 				<div class="card bg-initial card-hover overflow-hidden">
 					<header>
 						<lite-youtube width="100%" videoid="U0i-z-tpxY8" playlabel="Play: Keynote (Google I/O '18)"></lite-youtube>
-					</header> 
+					</header>
 					<div class="p-4 space-y-4 text-black dark:text-white">
-						<h6 data-toc-ignore="">Charting tutorial by ugyuu.</h6>
-					</div> 
+						<h6 data-toc-ignore="">{$_('tools.charting.tutorial')}</h6>
+					</div>
 				</div>
 			</div>
 
-			<h2 class="my-3">Download PeepoDrumKit:</h2>
-			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">	
-				<ToolCard 
+			<h2 class="my-3">{$_('tools.charting.peepo_dl')}</h2>
+			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
+				<ToolCard
 					Url="https://drive.google.com/uc?export=download&id=1TQuvKo1tBZrXZIMlUMJ3-1vU1jfsxI2H"
 					ImageSrc={peepoScreenshotUrl}
-					CardTitle="PeepoDrumKit"
-					CardSubtitle="Official Latest"
-					CardText ="The official latest version by samyuu, for regular charts without the experimental features."
+					CardTitle={$_('tools.card.peepo_official.title')}
+					CardSubtitle={$_('tools.card.peepo_official.subtitle')}
+					CardText={$_('tools.card.peepo_official.text')}
 				/>
-				<ToolCard 
+				<ToolCard
 					Url="https://github.com/0auBSQ/PeepoDrumKit/releases/latest"
 					ImageSrc={peepoScreenshotUrl}
-					CardTitle="PeepoDrumKit"
-					CardSubtitle="Unofficial Latest"
-					CardText ="The unofficial latest version continued by Komi, adding experimental features supported by OpenTaiko."
+					CardTitle={$_('tools.card.peepo_unofficial.title')}
+					CardSubtitle={$_('tools.card.peepo_unofficial.subtitle')}
+					CardText={$_('tools.card.peepo_unofficial.text')}
 				/>
 			</div>
 		{/if}
 
-		<h1 class="my-3">Additional resources:</h1>
+		<h1 class="my-3">{$_('tools.charting.additional')}</h1>
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
-			<ToolCard 
+			<ToolCard
 				Url="https://whmhammer.github.io/tja-tools/"
 				ImageSrc={tjatoolsScreenshotUrl}
-				CardTitle="TJA Tools"
-				CardSubtitle="WHMHammer's fork"
-				CardText ="Visualize your charts and check stats about them on the go!"
+				CardTitle={$_('tools.card.tja_tools.title')}
+				CardSubtitle={$_('tools.card.tja_tools.subtitle')}
+				CardText={$_('tools.card.tja_tools.text')}
 			/>
 			{#if optk_OS === "Win"}
-				<ToolCard 
+				<ToolCard
 					Url="https://arrowvortex.ddrnl.com/"
 					ImageSrc={arrowScreenshotUrl}
-					CardTitle="Arrow Vortex"
-					CardSubtitle="Official Latest"
-					CardText ="The recommended tool to sync your charts trouble free!"
+					CardTitle={$_('tools.card.arrow_vortex.title')}
+					CardSubtitle={$_('tools.card.arrow_vortex.subtitle')}
+					CardText={$_('tools.card.arrow_vortex.text')}
 				/>
 			{/if}
 		</div>
@@ -103,12 +104,12 @@
 {#if currentTab === 1}
 	<div class="content">
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
-			<ToolCard 
+			<ToolCard
 				Url="https://github.com/SubtitleEdit/subtitleedit"
 				ImageSrc={subeditScreenshotUrl}
-				CardTitle="Subtitle Edit"
-				CardSubtitle="Official Latest"
-				CardText ="The recommended tool to make VTT files for your charts!"
+				CardTitle={$_('tools.card.subtitle_edit.title')}
+				CardSubtitle={$_('tools.card.subtitle_edit.subtitle')}
+				CardText={$_('tools.card.subtitle_edit.text')}
 			/>
 		</div>
 	</div>
@@ -117,19 +118,19 @@
 {#if currentTab === 2}
 	<div class="content">
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
-			<ToolCard 
+			<ToolCard
 				Url="https://forms.gle/WXNUwjJyLdJoeRSM6"
 				ImageSrc={peepoScreenshotUrl}
-				CardTitle="OpenTaiko soundtrack"
-				CardSubtitle="Song submission form"
-				CardText ="You can submit your songs here for the OpenTaiko soundtrack! Charts are usually made within 2 weeks if the song is accepted."
+				CardTitle={$_('tools.card.submission.title')}
+				CardSubtitle={$_('tools.card.submission.subtitle')}
+				CardText={$_('tools.card.submission.text')}
 			/>
-			<ToolCard 
+			<ToolCard
 				Url="https://forms.gle/1HbDtS7FtJDNfhUb7"
 				ImageSrc={peepoScreenshotUrl}
-				CardTitle="OpenTaiko soundtrack"
-				CardSubtitle="Song suggestion form"
-				CardText ="You can recommand artists here whose songs you think would fit for OpenTaiko!"
+				CardTitle={$_('tools.card.suggestion.title')}
+				CardSubtitle={$_('tools.card.suggestion.subtitle')}
+				CardText={$_('tools.card.suggestion.text')}
 			/>
 		</div>
 	</div>

@@ -2,12 +2,22 @@
     import "../app.css";
     import "../lite-yt-embed.css";
     import "../lite-yt-embed.js";
-    
+
     import { onMount, setContext } from 'svelte';
     import { autoModeWatcher, getToastStore } from '@skeletonlabs/skeleton';
     import { initializeStores, Toast } from '@skeletonlabs/skeleton';
     import { download } from "@tauri-apps/plugin-upload";
     import { type } from '@tauri-apps/plugin-os';
+    import { readTextFile } from '@tauri-apps/plugin-fs';
+    import { path } from '@tauri-apps/api';
+
+    import { setupI18n } from '$lib/i18n/index.js';
+    import { _, isLoading, locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
+    import { GetPreferencesPath } from '$lib/utils/path.js';
+
+    setupI18n();
 
     initializeStores();
 
@@ -52,13 +62,13 @@
             try {
                 await download(url, path, prfunc);
                 return true;
-            } 
+            }
             catch (error) {
                 if (attempt === n) {
-                    TriggerError(`Download failed, aborting`);
-                    return false; 
+                    TriggerError(get(_)('dl.error.failed_abort'));
+                    return false;
                 }
-                TriggerWarning(`Download failed, retrying... (${attempt}/${n})`);
+                TriggerWarning(get(_)('dl.warn.failed_retry', { values: { attempt, max: n } }));
 
                 await wait(t);
             }
@@ -83,10 +93,23 @@
 
     setContext('toast', { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload, wait, GetOS });
 
-    onMount(() => {										
+    onMount(async () => {
         autoModeWatcher();
+
+        // Restore persisted locale
+        try {
+            const prefsDir = await GetPreferencesPath();
+            const langFilePath = await path.join(prefsDir, 'language.json');
+            const langFile = await readTextFile(langFilePath);
+            const { locale: savedLocale } = JSON.parse(langFile);
+            if (savedLocale) locale.set(savedLocale);
+        } catch {
+            // First launch or missing file — getLocaleFromNavigator() already applied
+        }
     })
 </script>
 
 <Toast />
+{#if !$isLoading}
 <slot></slot>
+{/if}
