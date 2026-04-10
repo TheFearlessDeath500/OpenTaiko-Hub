@@ -74,6 +74,8 @@
     "col": {
       "name":   "歌曲名称",
       "folder": "分区",
+      "difficulties": "难度",
+      "charter": "谱面作者：",
       "size":   "大小",
       "status": "状态"
     },
@@ -151,9 +153,9 @@
       "good":        "良",
       "ok":          "可",
       "bad":         "不可",
+      "list_points": "列表分",
       "video":       "视频",
-      "status":      "通关状态",
-      "list_points": "列表分"
+      "status":      "通关状态"
     },
     "video_link": "观看",
     "close":      "关闭",

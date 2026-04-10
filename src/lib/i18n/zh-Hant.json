@@ -13,7 +13,7 @@
     "songlist":    "歌曲",
     "skins":       "主題",
     "tools":       "工具",
-    "secrets":     "秘密",
+    "secrets":     "祕密",
     "information": "資訊",
     "links":       "鏈結",
     "themes":      "Hub 主題",
@@ -73,7 +73,9 @@
   "songs": {
     "col": {
       "name":   "歌曲名稱",
-      "folder": "資料夾",
+      "folder": "分類資料夾",
+      "difficulties": "難度",
+      "charter": "譜面作者：",
       "size":   "大小",
       "status": "狀態"
     },
@@ -122,7 +124,7 @@
     },
     "error": {
       "scanning":      "仍在掃描本機資料夾，因此無法下載{type}",
-      "zip_not_found": "在伺服器上找不到主題包。請在5分鐘後重試。如果問題仍然存在，請聯絡OpenTaiko團隊。"
+      "zip_not_found": "在伺服器上找不到主題壓縮包。請在 5 分鐘後重試 1 次。如果問題仍然存在，請聯絡 OpenTaiko 團隊。"
     },
     "success": {
       "all_up_to_date":    "所有{type}皆是最新版",
@@ -151,16 +153,16 @@
       "good":        "良",
       "ok":          "可",
       "bad":         "不可",
-      "video":       "影片",
-      "status":      "通關狀態",
-      "list_points": "列表分"
+      "list_points": "列表分",
+      "video":       "錄影",
+      "status":      "過關狀態"
     },
     "video_link": "觀看",
     "close":      "關閉",
     "status": {
-      "perfect":    "全良",
-      "full_combo": "全連",
-      "clear":      "通關"
+      "perfect":    "全良連段",
+      "full_combo": "全連段",
+      "clear":      "過關"
     }
   },
   "version_chip": {
@@ -198,11 +200,11 @@
     },
     "versioning": {
       "title":    "有關主題、素材的版本",
-      "compat":   "主題的版本號，需要與遊戲本體版本的次要更新版本號以上（例如 v[0.6.0].2）一致才相容。",
-      "optional": "其它素材（角色、小角色）的版本號，不一定是照主題的版本規則訂定的，所以不一致也有機會相容。",
+      "compat":   "主題的版本號，需要與遊戲本體版本號中，次要更新版本號以上的部分（例如 v[0.6.0].2）一致才相容。",
+      "optional": "其它素材（角色、小角色）的版本號，不一定是照主題的版本號規則訂定的，即使不一致也有機會相容。",
       "revision": "修訂版本號（例如 v0.6.0.[2]）在每次有與舊版相容的更新時會遞增，不用與 OpenTaiko 遊戲本體的修訂版本號一致。",
       "example":  "例如：版本號為 0.6.1.3 的主題可搭配 0.6.1.0 起的任何 OpenTaiko 遊戲本體版本使用，但不能搭配 0.6.2.0 起的遊戲本體版本。",
-      "wip":      "本段文字會在未來的 OpenTaiko Hub 更新中，跟據新發現的問題，修訂得更完善。"
+      "wip":      "本段文字會在未來的 OpenTaiko Hub 更新中，因應新發現的問題，逐步修訂完善。"
     },
     "error": {
       "changelog": "載入更新紀錄失敗。",
@@ -249,18 +251,18 @@
       "soundtrack": "OpenTaiko 原聲帶"
     },
     "card": {
-      "peepo_origin":     { "subtitle": "原作者最新版",   "text": "原作者 samyuu 維護的版本，可用於不使用實驗功能的普通譜面。" },
-      "peepo_optk":       { "subtitle": "OpenTaiko 團隊最新版", "text": "由 Komi 與 OpenTaiko 團隊繼續維護的版本，增加了可用於 OpenTaiko 的實驗功能，並強化了普通譜面的編輯功能。" },
+      "peepo_origin":     { "subtitle": "原作者最新版",   "text": "原作者 samyuu 維護的版本，可編輯不使用實驗功能的普通譜面。" },
+      "peepo_optk":       { "subtitle": "OpenTaiko 團隊最新版", "text": "由 Komi 與 OpenTaiko 團隊繼續維護的版本，增加了 OpenTaiko 支援的實驗功能，並強化了普通譜面的編輯功能。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer 版", "text": "產生並查看譜面的可視化圖片與統計資訊！" },
-      "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "官方最新版",   "text": "最推薦的對譜面對拍的工具！" },
-      "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "官方最新版",  "text": "最推薦的對譜面製作 VTT 歌詞檔的工具！" },
+      "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "官方最新版",   "text": "最推薦的譜面對拍工具！" },
+      "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "官方最新版",  "text": "最推薦的製作譜面 VTT 歌詞檔的工具！" },
       "submission":       { "title": "歌曲投稿表單", "subtitle": "自作歌曲", "text": "你可以在此投稿歌曲到 OpenTaiko！如果歌曲被採用，譜面通常會在 2 週內製作完成。" },
-      "suggestion":       { "title": "歌曲建議表單", "subtitle": "其他藝術家的歌曲", "text": "你可以在此推薦你認為適合 OpenTaiko 的藝術家！" }
+      "suggestion":       { "title": "歌曲建議表單", "subtitle": "其他作曲家的歌曲", "text": "你可以在此推薦你認為適合 OpenTaiko 的作曲家！" }
     }
   },
   "themes": {
-    "title":       "請選擇主題。",
-    "title_debug": "請選擇主題。（偵錯模式開啟）",
+    "title":       "選擇主題。",
+    "title_debug": "選擇主題。（偵錯模式開啟）",
     "optgroup": {
       "optk":     "OpenTaiko Hub 主題：",
       "skeleton": "Skeleton 內建主題："
@@ -297,7 +299,7 @@
       "thememode_json": "找不到 thememode.json 檔案（或設定資料夾）或檔案已損壞！<br>請重新安裝 OpenTaiko Hub 以修復此問題。"
     },
     "warn":    { "same_theme": "所選主題已是目前主題。", "same_theme_debug": "偵錯：所選主題已是目前主題。" },
-    "success": { "debug_disabled": "<b>偵錯模式已停用。</b><br><p class=\"smalltext\">（注意：您需要更改「debugMode」的值，才能完全停用偵錯模式！）</p>" }
+    "success": { "debug_disabled": "<b>偵錯模式已停用。</b><br><p class=\"smalltext\">（注意：需要更改「debugMode」的值，才能完全停用偵錯模式！）</p>" }
   },
   "lang": {
     "label": "語言",

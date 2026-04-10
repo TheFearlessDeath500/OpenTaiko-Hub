@@ -126,7 +126,7 @@
 
                     <h2><b>[Fix/BugFix]</b></h2>
                     <p>{$_('info.legend.fix')}
-                    <br><span class="smalltext"><b>({$_('info.legend.fix_note')})</b></span></p>
+                    <br><span class="smalltext"><b>{$_('info.legend.fix_note')}</b></span></p>
 
                     <h2><b>[Chore]</b></h2>
                     <p>{$_('info.legend.chore')}</p>
@@ -158,7 +158,7 @@
 
                     <h2><b>[Fix/BugFix]</b></h2>
                     <p>{$_('info.legend.fix')}
-                    <br><span class="smalltext"><b>({$_('info.legend.fix_note')})</b></span></p>
+                    <br><span class="smalltext"><b>{$_('info.legend.fix_note')}</b></span></p>
 
                     <h2><b>[Chore]</b></h2>
                     <p>{$_('info.legend.chore')}</p>

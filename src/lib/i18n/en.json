@@ -74,6 +74,8 @@
     "col": {
       "name":   "Song name",
       "folder": "Folder",
+      "difficulties": "Difficulties",
+      "charter": "Charter: ",
       "size":   "Size",
       "status": "Status"
     },
@@ -151,9 +153,9 @@
       "good":        "Good",
       "ok":          "OK",
       "bad":         "Bad",
+      "list_points": "List pts",
       "video":       "Video",
-      "status":      "Status",
-      "list_points": "List pts"
+      "status":      "Status"
     },
     "video_link": "Watch",
     "close":      "Close",

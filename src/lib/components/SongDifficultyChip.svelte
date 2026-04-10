@@ -1,5 +1,8 @@
 <script>
 
+import { _ } from 'svelte-i18n';
+import { get } from 'svelte/store';
+
 export let SongInfo;
 export let Difficulty = "Easy";
 export let OnCrownClick = undefined;
@@ -30,7 +33,7 @@ $: Level = SongInfo.chartDifficulties[Difficulty];
 
 $: Prefix = ["Easy", "Normal", "Hard", "Oni", "Edit"].includes(Difficulty) ? "★" : `${Difficulty} ★`;
 
-$: Maker = ["Easy", "Normal", "Hard", "Oni", "Edit", "Tower"].includes(Difficulty) ? `Charter: ${SongInfo.chartMakers[Difficulty]}` : undefined;
+$: Maker = ["Easy", "Normal", "Hard", "Oni", "Edit", "Tower"].includes(Difficulty) ? `${get(_)('songs.col.charter')}${SongInfo.chartMakers[Difficulty]}` : undefined;
 
 </script>
 

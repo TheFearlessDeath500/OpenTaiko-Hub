@@ -539,7 +539,7 @@
 			<tr>
 				<th><button on:click={() => SortSongsByColumn("name")}>{$_('songs.col.name')}</button></th>
 				<th><button on:click={() => SortSongsByColumn("genre")}>{$_('songs.col.folder')}</button></th>
-				<th colspan="5" class="w-1/5">Difficulties</th>
+				<th colspan="5" class="w-1/5">{$_('songs.col.difficulties')}</th>
 				<th><button on:click={() => SortSongsByColumn("size")}>{$_('songs.col.size')}</button></th>
 				<th class="w-1/6">{$_('songs.col.status')}</th>
 			</tr>
@@ -716,7 +716,7 @@
                         <th>{$_('hof.col.good')}</th>
                         <th>{$_('hof.col.ok')}</th>
                         <th>{$_('hof.col.bad')}</th>
-                        <th>LP</th>
+                        <th>{$_('hof.col.list_points')}</th>
                         <th>{$_('hof.col.video')}</th>
                     </tr>
                 </thead>

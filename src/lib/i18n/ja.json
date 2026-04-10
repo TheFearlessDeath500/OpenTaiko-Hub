@@ -74,6 +74,8 @@
     "col": {
       "name":   "曲名",
       "folder": "フォルダ",
+      "difficulties": "難易度",
+      "charter": "譜面作成：",
       "size":   "サイズ",
       "status": "状態"
     },
@@ -151,9 +153,9 @@
       "good":        "良",
       "ok":          "可",
       "bad":         "不可",
+      "list_points": "リストPt",
       "video":       "動画",
-      "status":      "クリア状態",
-      "list_points": "リストPt"
+      "status":      "クリア状態"
     },
     "video_link": "視聴",
     "close":      "閉じる",
