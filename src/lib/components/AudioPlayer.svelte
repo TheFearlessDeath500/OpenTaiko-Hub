@@ -111,11 +111,11 @@
         background-color: rgb(59, 165, 247);
     }
 	
-	[aria-label="pause"] {
+	.player:not(.paused) .play {
 		background-image: url(./pause.svg);
 	}
 
-	[aria-label="play"] {
+	.player.paused .play {
 		background-image: url(./play.svg);
 	}
 

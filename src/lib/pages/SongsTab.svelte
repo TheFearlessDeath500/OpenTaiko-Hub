@@ -10,6 +10,8 @@
     const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload } = getContext('toast');
 
     import { md5 } from 'js-md5';
+    import initSqlJs from 'sql.js';
+    import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 
     import { _ } from 'svelte-i18n';
     import { get } from 'svelte/store';
@@ -31,6 +33,109 @@
     let songDLProgress = {};
     let songCountProgress = 0;
     let songCountProgressBar = null;
+
+    // Hall of Fame
+    const hofDbUrl = 'https://opentaiko.github.io/hof.db3';
+    const hofDifficultyMap    = { 0: "Easy", 1: "Normal", 2: "Hard", 3: "Oni", 4: "Edit" };
+    const hofDifficultyRevMap = { "Easy": 0, "Normal": 1, "Hard": 2, "Oni": 3, "Edit": 4 };
+    const hofDiffShortMap     = { "Easy": "EZ", "Normal": "NM", "Hard": "HD", "Oni": "EX", "Edit": "EXEX" };
+    let hofDb = null;
+    // uniqueId → { difficultyString → globalRank }
+    let hofMap = {};
+
+    // Modal state
+    let hofModalOpen = false;
+    let hofModalSongInfo = null;
+    let hofModalDifficulty = null;
+    let hofModalScores = [];
+    let hofModalMaxListPoints = 0;
+
+    const ComputeMaxListPoints = (rank) => {
+        return parseInt(1000 * Math.pow(0.95, rank - 1));
+    };
+
+    const ScoreToListPointsRatio = (score) => {
+        const total = score.goodCount + score.okCount + score.badCount;
+        if (total === 0) return 0;
+        const accuracy = (score.goodCount + score.okCount * 0.5) / total;
+        const badRatio = score.badCount / total;
+        let ratio = Math.pow(accuracy, 6) * Math.pow(1 - badRatio, 18);
+        switch (score.status) {
+            case "Perfect":    break;
+            case "Full Combo": ratio *= 0.9; break;
+            case "Clear":      ratio *= 0.7; break;
+            default:           ratio = 0;    break;
+        }
+        return ratio;
+    };
+
+    const updateHoFInfo = async () => {
+        try {
+            const SQL = await initSqlJs({ locateFile: () => sqlWasmUrl });
+
+            const response = await fetch(hofDbUrl);
+            const buffer = await response.arrayBuffer();
+            hofDb = new SQL.Database(new Uint8Array(buffer));
+
+            // Global rank: all entries sorted by internalDifficultyIndex DESC regardless of difficulty
+            const result = hofDb.exec(
+                'SELECT uniqueId, difficulty, internalDifficultyIndex FROM entries ORDER BY internalDifficultyIndex DESC'
+            );
+
+            if (result.length > 0) {
+                let globalRank = 0;
+                for (const [uniqueId, difficulty, _idx] of result[0].values) {
+                    globalRank++;
+                    const diffStr = hofDifficultyMap[difficulty];
+                    if (diffStr && uniqueId) {
+                        if (!hofMap[uniqueId]) hofMap[uniqueId] = {};
+                        hofMap[uniqueId][diffStr] = globalRank;
+                    }
+                }
+            }
+
+            // Patch soundtrackInfo with chartHoFRanks derived from the DB
+            soundtrackInfo = soundtrackInfo.map(s => ({
+                ...s,
+                chartHoFRanks: hofMap[s.uniqueId] ?? {}
+            }));
+        } catch (e) {
+            console.error('Failed to load HoF data:', e);
+        }
+    };
+
+    const openHoFModal = (songInfo, difficulty) => {
+        if (!hofDb) return;
+        const rank = hofMap[songInfo.uniqueId]?.[difficulty];
+        if (rank === undefined) return;
+
+        const diffInt = hofDifficultyRevMap[difficulty];
+        const result = hofDb.exec(
+            `SELECT player, status, score, grade, goodCount, okCount, badCount, videoLink, imageLink
+             FROM scores WHERE entryId = ? AND difficulty = ? ORDER BY score DESC`,
+            [songInfo.uniqueId, diffInt]
+        );
+
+        const maxListPoints = ComputeMaxListPoints(rank);
+        hofModalMaxListPoints = maxListPoints;
+
+        hofModalScores = result.length > 0
+            ? result[0].values.map((row, i) => {
+                const s = {
+                    rank: i + 1,
+                    player: row[0], status: row[1], score: row[2], grade: row[3],
+                    goodCount: row[4], okCount: row[5], badCount: row[6],
+                    videoLink: row[7], imageLink: row[8]
+                };
+                s.listPoints = Math.round(maxListPoints * ScoreToListPointsRatio(s));
+                return s;
+            })
+            : [];
+
+        hofModalSongInfo = songInfo;
+        hofModalDifficulty = difficulty;
+        hofModalOpen = true;
+    };
 
     const filter1 = (sInfo) => {
         const uids = ["losTPEtAlSwANDERRBHLiXoUNdsetSUnaN"];
@@ -381,6 +486,7 @@
 
     onMount(async () => {
         await updateSoundtrackInfo();
+        updateHoFInfo(); // fire-and-forget: patches soundtrackInfo when DB is ready
         crawlSongs();
     });
 
@@ -433,19 +539,19 @@
 				</td>
 				{:else}
 				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Easy"/>
+					<SongDifficultyChip SongInfo={songInfo} Difficulty="Easy" OnCrownClick={openHoFModal}/>
 				</td>
 				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Normal"/>
+					<SongDifficultyChip SongInfo={songInfo} Difficulty="Normal" OnCrownClick={openHoFModal}/>
 				</td>
 				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Hard"/>
+					<SongDifficultyChip SongInfo={songInfo} Difficulty="Hard" OnCrownClick={openHoFModal}/>
 				</td>
 				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Oni"/>
+					<SongDifficultyChip SongInfo={songInfo} Difficulty="Oni" OnCrownClick={openHoFModal}/>
 				</td>
 				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Edit"/>
+					<SongDifficultyChip SongInfo={songInfo} Difficulty="Edit" OnCrownClick={openHoFModal}/>
 				</td>
 				{/if}
 				<td>{songInfo.chartSize}Mb</td>
@@ -492,7 +598,141 @@
 	</table>
 </div>
 
+{#if hofModalOpen && hofModalSongInfo}
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+<div class="modal-backdrop" on:click={() => hofModalOpen = false}>
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <div class="card p-6 space-y-4 modal-card" on:click|stopPropagation>
+        <div class="flex justify-between items-center">
+            <h2 class="h3">Hall of Fame — {hofModalSongInfo.chartTitle} ({hofDiffShortMap[hofModalDifficulty]} #{hofMap[hofModalSongInfo.uniqueId]?.[hofModalDifficulty]})</h2>
+            <button class="button-red button-main" on:click={() => hofModalOpen = false}>{$_('hof.close')}</button>
+        </div>
+        <div class="flex flex-col gap-1">
+            <a href="https://opentaiko.github.io/songinfo/{hofModalSongInfo.uniqueId}?d={hofDifficultyRevMap[hofModalDifficulty]}" target="_blank" class="text-blue-600 underline">
+                {$_('hof.website_link')} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+            <span class="text-sm opacity-70">{$_('hof.max_list_points')}: <b>{hofModalMaxListPoints}</b></span>
+        </div>
+        {#if hofModalScores.length === 0}
+            <p>{$_('hof.no_scores')}</p>
+        {:else}
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>{$_('hof.col.rank')}</th>
+                        <th>{$_('hof.col.player')}</th>
+                        <th>{$_('hof.col.score')}</th>
+                        <th>{$_('hof.col.grade')}</th>
+                        <th>{$_('hof.col.status')}</th>
+                        <th>{$_('hof.col.good')}</th>
+                        <th>{$_('hof.col.ok')}</th>
+                        <th>{$_('hof.col.bad')}</th>
+                        <th>LP</th>
+                        <th>{$_('hof.col.video')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each hofModalScores as s}
+                        {@const gradeDisplay = s.grade?.toUpperCase()}
+                        {@const gradeClass = gradeDisplay === 'Ω' ? 'omega' : gradeDisplay}
+                    <tr>
+                        <td>{s.rank}</td>
+                        <td>{s.player ?? '—'}</td>
+                        <td>{s.score?.toLocaleString()}</td>
+                        <td class="grade grade-{gradeClass}">{gradeDisplay}</td>
+                        <td class="status status-{s.status?.replace(' ', '-')}">{s.status}</td>
+                        <td>{s.goodCount}</td>
+                        <td>{s.okCount}</td>
+                        <td>{s.badCount}</td>
+                        <td>{s.listPoints?.toLocaleString()}</td>
+                        <td>
+                            {#if s.videoLink}
+                                <a href={s.videoLink} target="_blank" class="text-blue-600 underline">{$_('hof.video_link')} <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            {:else}—{/if}
+                        </td>
+                    </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+        {/if}
+    </div>
+</div>
+{/if}
+
 <style>
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .modal-card {
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 
+    /* Grade letter colors */
+    .grade { font-weight: bold; }
+    .grade-E { color: #ffffff; }
+    .grade-D { color: #ff4444; }
+    .grade-C { color: #ff9933; }
+    .grade-B { color: #ffdd00; }
+    .grade-A { color: #44cc44; }
+    .grade-S {
+        background: linear-gradient(90deg, #56ccf2, #2f80ed, #56ccf2);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer-blue 2s linear infinite;
+    }
+    .grade-omega {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(90deg, #1a237e, #3949ab, #5c6bc0, #3949ab, #1a237e);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer-blue 2s linear infinite;
+    }
 
+    /* Status colors */
+    .status-Perfect {
+        background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00cc00, #0088ff, #8800ff, #ff0000);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+        animation: rainbow 3s linear infinite;
+    }
+    .status-Full-Combo {
+        background: linear-gradient(90deg, #b8860b, #ffd700, #fffacd, #ffd700, #b8860b);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+        animation: shimmer-gold 2s linear infinite;
+    }
+
+    @keyframes rainbow {
+        0%   { background-position: 0% center; }
+        100% { background-position: 300% center; }
+    }
+    @keyframes shimmer-gold {
+        0%   { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+    @keyframes shimmer-blue {
+        0%   { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
 </style>

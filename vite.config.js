@@ -5,5 +5,5 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	resolve: {
 		dedupe: ['svelte'],
-	}
+	},
 });

@@ -2,11 +2,12 @@
 
 export let SongInfo;
 export let Difficulty = "Easy";
+export let OnCrownClick = undefined;
 
-$: HoFCrownColorClass = (HoFRank !== undefined) 
+$: HoFCrownColorClass = (HoFRank !== undefined)
     ? (HoFRank === 1 || Level >= 13)
         ? "text-yellow-500"
-        : (HoFRank === 2 || Level >= 12) 
+        : (HoFRank === 2 || Level >= 12)
             ? "text-zinc-400"
             : (HoFRank === 3 || Level >= 11)
                 ? "text-amber-800"
@@ -23,7 +24,7 @@ $: ChipColor = {
     "Dan": "blue"
 }[Difficulty];
 
-$: HoFRank = SongInfo.chartHoFRanks[Difficulty];
+$: HoFRank = SongInfo.chartHoFRanks?.[Difficulty];
 
 $: Level = SongInfo.chartDifficulties[Difficulty];
 
@@ -38,11 +39,13 @@ $: Maker = ["Easy", "Normal", "Hard", "Oni", "Edit", "Tower"].includes(Difficult
     <span class="badge bg-{ChipColor}-100 text-{ChipColor}-800 levelchip" title={Maker}>{Prefix}{~~Level}</span>
     {#if HoFRank !== undefined}
         <br /><br />
-        <a href="https://opentaiko.github.io/hof" class="hofrank" target="_blank" title="OpenTaiko Hall of Fame Rank #{HoFRank}"><i class="fa-solid fa-crown {HoFCrownColorClass}"></i> <small class="text-black dark:text-white"><b>{HoFRank}</b></small></a>
+        <button class="hofrank" title="OpenTaiko Hall of Fame" on:click={() => OnCrownClick?.(SongInfo, Difficulty)}>
+            <i class="fa-solid fa-crown {HoFCrownColorClass}"></i> <small class="text-black dark:text-white"><b>{HoFRank}</b></small>
+        </button>
     {/if}
 {/if}
 
 <style>
     .levelchip {cursor: pointer;}
-    .hofrank {text-decoration: none;}
+    .hofrank {text-decoration: none; background: none; border: none; cursor: pointer; padding: 0;}
 </style>

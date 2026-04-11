@@ -139,6 +139,25 @@
       "update":     "更新"
     }
   },
+  "hof": {
+    "website_link":    "OpenTaikoウェブサイトで見る",
+    "no_scores":       "まだスコアが記録されていません。",
+    "max_list_points": "最大リストポイント",
+    "col": {
+      "rank":        "順位",
+      "player":      "プレイヤー",
+      "score":       "スコア",
+      "grade":       "評価",
+      "good":        "良",
+      "ok":          "可",
+      "bad":         "不可",
+      "video":       "動画",
+      "status":      "クリア状態",
+      "list_points": "リストPt"
+    },
+    "video_link": "視聴",
+    "close":      "閉じる"
+  },
   "version_chip": {
     "incompatible": "現在のOpenTaikoバージョンと互換性がありません",
     "outdated":     "古い可能性があります。注意して使用してください"

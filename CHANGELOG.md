@@ -3,6 +3,11 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.17] - 2026-04-11 (Alpha)
+
+- [Enhancement] Better HoF display and directly use the hof.db3 database to get the HoF ranks
+- [Fix] Play icon sometimes disappearing when changing theme
+
 ## [0.1.16] - 2026-04-09 (Alpha)
 
 - [Enhancement] Faster skin downloads

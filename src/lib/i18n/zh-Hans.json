@@ -139,6 +139,25 @@
       "update":     "更新"
     }
   },
+  "hof": {
+    "website_link":    "在OpenTaiko官网查看",
+    "no_scores":       "暂无分数记录。",
+    "max_list_points": "最高列表分",
+    "col": {
+      "rank":        "排名",
+      "player":      "玩家",
+      "score":       "分数",
+      "grade":       "评级",
+      "good":        "良",
+      "ok":          "可",
+      "bad":         "不可",
+      "video":       "视频",
+      "status":      "通关状态",
+      "list_points": "列表分"
+    },
+    "video_link": "观看",
+    "close":      "关闭"
+  },
   "version_chip": {
     "incompatible": "与当前 OpenTaiko 版本不兼容",
     "outdated":     "可能已过时，请谨慎使用"

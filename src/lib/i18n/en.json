@@ -139,6 +139,25 @@
       "update":     "Update"
     }
   },
+  "hof": {
+    "website_link":    "View on OpenTaiko website",
+    "no_scores":       "No scores recorded yet.",
+    "max_list_points": "Max list points",
+    "col": {
+      "rank":        "Rank",
+      "player":      "Player",
+      "score":       "Score",
+      "grade":       "Grade",
+      "good":        "Good",
+      "ok":          "OK",
+      "bad":         "Bad",
+      "video":       "Video",
+      "status":      "Status",
+      "list_points": "List pts"
+    },
+    "video_link": "Watch",
+    "close":      "Close"
+  },
   "version_chip": {
     "incompatible": "Not compatible with the current OpenTaiko version",
     "outdated":     "Might be outdated, use with caution"
