@@ -3,6 +3,10 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.18] - 2026-04-12 (Alpha)
+
+- [Enhancement] Add artists information directly on the song list visible by expanding the song bar
+
 ## [0.1.17] - 2026-04-11 (Alpha)
 
 - [Enhancement] Better HoF display and directly use the hof.db3 database to get the HoF ranks

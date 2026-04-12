@@ -484,9 +484,48 @@
         //console.log(songDLProgress);
     }
 
+    // Artists info
+    const artistsDbUrl = 'https://opentaiko.github.io/artists_info.db3';
+    let songArtistsMap = {}; // songUid → { artists: ArtistObj[], link }
+    let expandedSongUid = null;
+
+    const updateArtistInfo = async () => {
+        try {
+            const SQL = await initSqlJs({ locateFile: () => sqlWasmUrl });
+            const response = await fetch(artistsDbUrl);
+            const buffer = await response.arrayBuffer();
+            const db = new SQL.Database(new Uint8Array(buffer));
+
+            const artistsResult = db.exec('SELECT entryId, artist, youtube, soundcloud, spotify, bandcamp, bilibili, other FROM artists');
+            const artistsById = {};
+            if (artistsResult.length > 0) {
+                for (const [entryId, artist, youtube, soundcloud, spotify, bandcamp, bilibili, other] of artistsResult[0].values) {
+                    artistsById[entryId] = { artist, youtube, soundcloud, spotify, bandcamp, bilibili, other };
+                }
+            }
+
+            const songsResult = db.exec('SELECT songUid, artists, link FROM songs');
+            if (songsResult.length > 0) {
+                for (const [songUid, artistsJson, link] of songsResult[0].values) {
+                    const artistIds = JSON.parse(artistsJson || '[]');
+                    const artists = artistIds.map(id => artistsById[id]).filter(Boolean);
+                    songArtistsMap[songUid] = { artists, link };
+                }
+            }
+            songArtistsMap = songArtistsMap;
+        } catch (e) {
+            console.error('Failed to load artist info:', e);
+        }
+    };
+
+    const toggleExpand = (uid) => {
+        expandedSongUid = expandedSongUid === uid ? null : uid;
+    };
+
     onMount(async () => {
         await updateSoundtrackInfo();
-        updateHoFInfo(); // fire-and-forget: patches soundtrackInfo when DB is ready
+        updateHoFInfo();      // fire-and-forget: patches soundtrackInfo when DB is ready
+        updateArtistInfo();   // fire-and-forget
         crawlSongs();
     });
 
@@ -523,10 +562,14 @@
 		<tbody>
 			{#each soundtrackInfo as songInfo}
 			{#if GetFilteredSInfo(songInfo)}
-			<tr>
+			<tr class:row-expanded={expandedSongUid === songInfo.uniqueId}>
 				<td>
-					<AudioPlayer {songInfo} />
-					<!-- <button on:click={() => navigator.clipboard.writeText(songInfo.uniqueId)}>Copy uniqueID</button> -->
+					<div class="flex items-center gap-2">
+						<button class="expand-btn" on:click={() => toggleExpand(songInfo.uniqueId)} aria-label="expand">
+							<i class="fa-solid fa-chevron-{expandedSongUid === songInfo.uniqueId ? 'down' : 'right'}"></i>
+						</button>
+						<div class="flex-1"><AudioPlayer {songInfo} /></div>
+					</div>
 				</td>
 				<td>{songInfo.tjaGenreFolder}</td>
 				{#if songInfo.chartDifficulties.Dan !== undefined}
@@ -592,6 +635,49 @@
 				</td>
 				{/if}
 			</tr>
+			{#if expandedSongUid === songInfo.uniqueId}
+				{@const artistData = songArtistsMap[songInfo.uniqueId]}
+			<tr class="expanded-detail-row">
+				<td colspan="9">
+					<div class="song-detail-box">
+						<!-- Jacket -->
+						<div class="song-jacket">
+							{#if songInfo.chartJacketFilePath}
+								<img
+									src="https://raw.githubusercontent.com/OpenTaiko/OpenTaiko-Soundtrack/main/{songInfo.chartJacketFilePath}"
+									alt="jacket"
+								/>
+							{:else}
+								<div class="no-jacket"><span>No jacket</span></div>
+							{/if}
+						</div>
+						<!-- Artist info -->
+						<div class="song-artist-info">
+							{#if artistData && artistData.artists.length > 0}
+								{#each artistData.artists as artist}
+									<div class="artist-entry">
+										<span class="artist-name">{artist.artist}</span>
+										<div class="artist-links">
+											{#if artist.youtube}   <a href={artist.youtube}   target="_blank" class="artist-link link-youtube">  <i class="fa-brands fa-youtube"></i>    YouTube</a>   {/if}
+											{#if artist.soundcloud}<a href={artist.soundcloud} target="_blank" class="artist-link link-soundcloud"><i class="fa-brands fa-soundcloud"></i> SoundCloud</a>{/if}
+											{#if artist.spotify}   <a href={artist.spotify}   target="_blank" class="artist-link link-spotify">  <i class="fa-brands fa-spotify"></i>    Spotify</a>   {/if}
+											{#if artist.bandcamp}  <a href={artist.bandcamp}  target="_blank" class="artist-link link-bandcamp"> <i class="fa-brands fa-bandcamp"></i>   Bandcamp</a>  {/if}
+											{#if artist.bilibili}  <a href={artist.bilibili}  target="_blank" class="artist-link link-bilibili"> <i class="fa-solid fa-tv"></i>          Bilibili</a>  {/if}
+											{#if artist.other}     <a href={artist.other}     target="_blank" class="artist-link link-other">    <i class="fa-solid fa-link"></i>        Website</a>   {/if}
+										</div>
+									</div>
+								{/each}
+								{#if artistData.link}
+									<a href={artistData.link} target="_blank" class="artist-link link-other mt-1"><i class="fa-solid fa-music"></i> Song link</a>
+								{/if}
+							{:else}
+								<span class="opacity-50 italic">No artist information available.</span>
+							{/if}
+						</div>
+					</div>
+				</td>
+			</tr>
+			{/if}
 			{/if}
 			{/each}
 		</tbody>
@@ -735,4 +821,93 @@
         0%   { background-position: 0% center; }
         100% { background-position: 200% center; }
     }
+
+    /* Expand button */
+    .expand-btn {
+        flex-shrink: 0;
+        width: 1.6rem;
+        height: 1.6rem;
+        border-radius: 0.3rem;
+        opacity: 0.6;
+        transition: opacity 0.15s;
+    }
+    .expand-btn:hover { opacity: 1; }
+
+    /* Expanded detail row */
+    .expanded-detail-row td { padding: 0 !important; }
+
+    .song-detail-box {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid rgba(128,128,128,0.2);
+    }
+
+    /* Jacket */
+    .song-jacket {
+        flex-shrink: 0;
+        width: 96px;
+        height: 96px;
+        border-radius: 0.4rem;
+        overflow: hidden;
+        border: 1px solid rgba(128,128,128,0.3);
+    }
+    .song-jacket img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .no-jacket {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(128,128,128,0.15);
+        font-size: 0.7rem;
+        opacity: 0.5;
+        font-style: italic;
+    }
+
+    /* Artist info */
+    .song-artist-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        justify-content: center;
+    }
+    .artist-entry {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    .artist-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .artist-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+    .artist-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: #fff;
+        text-decoration: none;
+        transition: opacity 0.15s;
+    }
+    .artist-link:hover { opacity: 0.8; }
+    .link-youtube   { background: #ff0000; }
+    .link-soundcloud{ background: #ff5500; }
+    .link-spotify   { background: #1db954; }
+    .link-bandcamp  { background: #1da0c3; }
+    .link-bilibili  { background: #00a1d6; }
+    .link-other     { background: #555; }
 </style>
