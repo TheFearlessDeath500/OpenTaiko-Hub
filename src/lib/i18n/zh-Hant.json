@@ -156,7 +156,12 @@
       "list_points": "列表分"
     },
     "video_link": "觀看",
-    "close":      "關閉"
+    "close":      "關閉",
+    "status": {
+      "perfect":    "全良",
+      "full_combo": "全連",
+      "clear":      "通關"
+    }
   },
   "version_chip": {
     "incompatible": "與目前的 OpenTaiko 版本不相容",

@@ -156,7 +156,12 @@
       "list_points": "List pts"
     },
     "video_link": "Watch",
-    "close":      "Close"
+    "close":      "Close",
+    "status": {
+      "perfect":    "Perfect",
+      "full_combo": "Full Combo",
+      "clear":      "Clear"
+    }
   },
   "version_chip": {
     "incompatible": "Not compatible with the current OpenTaiko version",

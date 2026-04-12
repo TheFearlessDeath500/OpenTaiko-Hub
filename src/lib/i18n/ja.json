@@ -156,7 +156,12 @@
       "list_points": "リストPt"
     },
     "video_link": "視聴",
-    "close":      "閉じる"
+    "close":      "閉じる",
+    "status": {
+      "perfect":    "全良",
+      "full_combo": "フルコンボ",
+      "clear":      "クリア"
+    }
   },
   "version_chip": {
     "incompatible": "現在のOpenTaikoバージョンと互換性がありません",

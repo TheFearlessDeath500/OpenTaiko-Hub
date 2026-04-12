@@ -112,7 +112,7 @@
         const diffInt = hofDifficultyRevMap[difficulty];
         const result = hofDb.exec(
             `SELECT player, status, score, grade, goodCount, okCount, badCount, videoLink, imageLink
-             FROM scores WHERE entryId = ? AND difficulty = ? ORDER BY score DESC`,
+             FROM scores WHERE entryId = ? AND difficulty = ?`,
             [songInfo.uniqueId, diffInt]
         );
 
@@ -120,16 +120,18 @@
         hofModalMaxListPoints = maxListPoints;
 
         hofModalScores = result.length > 0
-            ? result[0].values.map((row, i) => {
-                const s = {
-                    rank: i + 1,
-                    player: row[0], status: row[1], score: row[2], grade: row[3],
-                    goodCount: row[4], okCount: row[5], badCount: row[6],
-                    videoLink: row[7], imageLink: row[8]
-                };
-                s.listPoints = Math.round(maxListPoints * ScoreToListPointsRatio(s));
-                return s;
-            })
+            ? result[0].values
+                .map((row) => {
+                    const s = {
+                        player: row[0], status: row[1], score: row[2], grade: row[3],
+                        goodCount: row[4], okCount: row[5], badCount: row[6],
+                        videoLink: row[7], imageLink: row[8]
+                    };
+                    s.listPoints = Math.round(maxListPoints * ScoreToListPointsRatio(s));
+                    return s;
+                })
+                .sort((a, b) => b.listPoints - a.listPoints || b.score - a.score)
+                .map((s, i) => ({ ...s, rank: i + 1 }))
             : [];
 
         hofModalSongInfo = songInfo;
@@ -727,7 +729,7 @@
                         <td>{s.player ?? '—'}</td>
                         <td>{s.score?.toLocaleString()}</td>
                         <td class="grade grade-{gradeClass}">{gradeDisplay}</td>
-                        <td class="status status-{s.status?.replace(' ', '-')}">{s.status}</td>
+                        <td class="status status-{s.status?.replace(' ', '-')}">{s.status === 'Perfect' ? $_('hof.status.perfect') : s.status === 'Full Combo' ? $_('hof.status.full_combo') : s.status === 'Clear' ? $_('hof.status.clear') : (s.status ?? '—')}</td>
                         <td>{s.goodCount}</td>
                         <td>{s.okCount}</td>
                         <td>{s.badCount}</td>

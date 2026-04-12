@@ -3,6 +3,10 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.19] - 2026-04-12 (Alpha)
+
+- [Chore] Sort HoF plays by list points and translate clear statuses
+
 ## [0.1.18] - 2026-04-12 (Alpha)
 
 - [Enhancement] Add artists information directly on the song list visible by expanding the song bar
