@@ -3,6 +3,10 @@
 You can update either through the OpenTaiko Hub, or directly from the releases tab:
 - https://github.com/OpenTaiko/OpenTaiko-Hub/releases
 
+## [0.1.20] - 2026-04-13 (Alpha)
+
+- [Chore/i18n] Correct all instances of チャート to 譜面 in the 日本語 (Japanese) translation
+
 ## [0.1.19] - 2026-04-12 (Alpha)
 
 - [Chore] Sort HoF plays by list points and translate clear statuses
