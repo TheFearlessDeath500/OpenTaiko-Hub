@@ -121,7 +121,7 @@
                     <h2><b>[Feat]</b></h2>
                     <p>{$_('info.legend.feat')}</p>
 
-                    <h2><b>[Enhancement]</b></h2>
+                    <h2><b>[Enhance(ment)]</b></h2>
                     <p>{$_('info.legend.enhancement')}</p>
 
                     <h2><b>[Fix/BugFix]</b></h2>
