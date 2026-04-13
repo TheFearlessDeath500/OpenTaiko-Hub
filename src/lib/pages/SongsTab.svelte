@@ -658,7 +658,7 @@
     <div class="card p-6 space-y-4 modal-card" on:click|stopPropagation>
         <div class="flex justify-between items-center">
             <h2 class="h3">Hall of Fame — {hofModalSongInfo.chartTitle} ({hofDiffShortMap(hofModalDifficulty).toUpperCase()} #{hofMap[hofModalSongInfo.uniqueId]?.[hofModalDifficulty]})</h2>
-            <button class="button-red button-main" on:click={() => hofModalOpen = false}>{$_('hof.close')}</button>
+            <button class="btn-icon btn-icon-sm variant-filled" on:click={() => hofModalOpen = false} aria-label={$_('hof.close')}>✕</button>
         </div>
         <div class="flex flex-col gap-1">
             <a href="https://opentaiko.github.io/songinfo/{hofModalSongInfo.uniqueId}?d={hofDifficultyRevMap[hofModalDifficulty]}" target="_blank" class="text-blue-600 underline">
