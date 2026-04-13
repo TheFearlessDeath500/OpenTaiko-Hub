@@ -6,6 +6,15 @@ You can update either through the OpenTaiko Hub, or directly from the releases t
 ## [0.1.20] - 2026-04-13 (Alpha)
 
 - [Chore/i18n] Correct all instances of チャート to 譜面 in the 日本語 (Japanese) translation
+- [Fix] Inconsistent tauri version fixed by pinning minor version
+- [Enhance] Tool tab layout (fix header size hierarchy; revise titles for readability; prevent image distortion)
+- [Enhance] Retake tool screenshots and refine description
+- [i18n] adding missing translations; adjust zh-TW translation
+- [Enhance] Fix double parentheses for [Fix] legend
+- [Enhance] \[Enhancement] -> [Enhance(ment)]
+- [Chore] Deduplicate duplicated codes
+- [Fix] Debug dark mode switch broken
+- [Enhance] Replace HoF panel "close" text button with an x-mark button
 
 ## [0.1.19] - 2026-04-12 (Alpha)
 
