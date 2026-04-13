@@ -15,27 +15,17 @@
 
     {#if IsScanning === true || CurrentAssets[AssetType] === undefined}
         <p>{$_('asset_cell.scanning')}</p>
-    {:else if !Object.keys(CurrentAssets[AssetType]).includes(AssetInfo[`${AssetPrefix}Folder`])}
-        <p>{$_('asset_cell.not_downloaded')}</p>
-        <br />
-        {#if Progress === undefined}
-            <button type="button" on:click={() => DownloadMethod(AssetInfo, null, AssetType)} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.download')}</button>
-        {:else}
-            <ProgressBar bind:value={Progress} max={100} />
-        {/if}
-    {:else if CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion === AssetInfo[`${AssetPrefix}Version`]}
-        <p>{CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion}</p>
-        <br />
-        {#if Progress === undefined}
-            <button type="button" on:click={() => DownloadMethod(AssetInfo, CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]], AssetType)} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.redownload')}</button>
-        {:else}
-            <ProgressBar bind:value={Progress} max={100} />
-        {/if}
     {:else}
-        <p>{CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion}</p>
+        <p>{CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]]?.assetVersion ?? $_('asset_cell.not_downloaded')}</p>
         <br />
         {#if Progress === undefined}
-            <button type="button" on:click={() => DownloadMethod(AssetInfo, CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]], AssetType)} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.update')}</button>
+            {#if !Object.keys(CurrentAssets[AssetType]).includes(AssetInfo[`${AssetPrefix}Folder`])}
+                <button type="button" on:click={() => DownloadMethod(AssetInfo, null, AssetType)} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.download')}</button>
+            {:else if CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]].assetVersion !== AssetInfo[`${AssetPrefix}Version`]}
+                <button type="button" on:click={() => DownloadMethod(AssetInfo, CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]], AssetType)} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.update')}</button>
+            {:else}
+                <button type="button" on:click={() => DownloadMethod(AssetInfo, CurrentAssets[AssetType][AssetInfo[`${AssetPrefix}Folder`]], AssetType)} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('asset_cell.button.redownload')}</button>
+            {/if}
         {:else}
             <ProgressBar bind:value={Progress} max={100} />
         {/if}

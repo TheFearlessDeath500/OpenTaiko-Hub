@@ -1,7 +1,7 @@
 import { resourceDir, documentDir, appConfigDir } from '@tauri-apps/api/path';
 import { type } from '@tauri-apps/plugin-os';
 
-const GetOS = async () => {
+export const GetOS = async () => {
     const currentPlatform = await type();
     switch (currentPlatform) {
         case "linux":

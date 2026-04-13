@@ -6,7 +6,8 @@
     import { openPath } from '@tauri-apps/plugin-opener';
 
     import { getContext } from 'svelte';
-    const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload, GetOS } = getContext('toast');
+    const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload } = getContext('toast');
+    import { GetOS } from '$lib/utils/path.js';
 
     import { GetRootPath } from "../lib/utils/path.js";
     import { _ } from 'svelte-i18n';
@@ -341,18 +342,17 @@
                                 <button type="button" on:click={TryFetchingCurrentVersion} class="button-blue button-main"><i class="fa-solid fa-rotate"></i> {$_('home.button.reload')}</button>
                                 {#if buildDetailsNotFound === true}
                                     <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('home.button.download')}</button>
-                                {:else if latestVersion !== optk_version && 'Loading...' !== latestVersion}
-                                    <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> {$_('home.button.launch')}</button>
-                                    <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> {$_('home.button.explorer')}</button>
-                                    <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('home.button.update')}</button>
-                                    {#if checkSkinCompatibility(latestVersion, optk_version) === false}
-                                        <span class="text-red-500">{$_('home.warn.skin_update')}</span>
-                                    {/if}
-
                                 {:else}
                                     <button type="button" on:click={LaunchOpenTaiko} class="button-blue button-main"><i class="fa-solid fa-rocket"></i> {$_('home.button.launch')}</button>
                                     <button type="button" on:click={OpenInExplorer} class="button-blue button-main"><i class="fa-solid fa-folder-open"></i> {$_('home.button.explorer')}</button>
-                                    <button type="button" on:click={DownloadOpenTaiko} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('home.button.redownload')}</button>
+                                    {#if latestVersion !== optk_version && 'Loading...' !== latestVersion}
+                                        <button type="button" on:click={DownloadOpenTaiko} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('home.button.update')}</button>
+                                        {#if checkSkinCompatibility(latestVersion, optk_version) === false}
+                                            <span class="text-red-500">{$_('home.warn.skin_update')}</span>
+                                        {/if}
+                                    {:else}
+                                        <button type="button" on:click={DownloadOpenTaiko} class="button-gray button-main"><i class="fa-solid fa-download"></i> {$_('home.button.redownload')}</button>
+                                    {/if}
                                 {/if}
                             {/if}
                         {/if}

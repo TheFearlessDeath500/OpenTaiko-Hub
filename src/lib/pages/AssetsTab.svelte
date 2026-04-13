@@ -34,7 +34,7 @@ for (const file of files) {
     import { getContext } from 'svelte';
     const { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload } = getContext('toast');
 
-    import { GetRootPath } from "../utils/path.js";
+    import { GetRootPath } from "$lib/utils/path.js";
     import { _ } from 'svelte-i18n';
     import { get } from 'svelte/store';
 
@@ -171,6 +171,10 @@ for (const file of files) {
         }
     }
 
+    const AssetPrefix = (assetType) => (assetType === "Skins") ? "skin" : "chara";
+    const AssetTabType = (currentAsset) => ["Skins", "Characters", "Puchicharas"][currentAsset];
+    const AssetTabPrefix = (currentAsset) => AssetPrefix(AssetTabType(currentAsset));
+
     const DownloadDisplayedAssets = async (assetType) => {
         if (assetScanning === true) {
             const translatedType = get(_)(`assets.type.${assetType.toLowerCase()}`);
@@ -178,7 +182,7 @@ for (const file of files) {
             return ;
         }
 
-        const assetPrefix = (assetType === "Skins") ? "skin" : "chara";
+        const assetPrefix = AssetPrefix(assetType);
 
         const _filter = (a) => {
             const _notdownloaded = !Object.keys(currentAssets[assetType]).includes(a[`${assetPrefix}Folder`]);
@@ -198,7 +202,7 @@ for (const file of files) {
 
         assetCountProgress[assetType] = 0;
         for (const Aif of AInfo) {
-            const assetRelpath = (assetType === "Skins") ? Aif.skinFolder : Aif.charaFolder;
+            const assetRelpath = Aif[`${AssetPrefix(assetType)}Folder`];
 
             assetCountProgressBar[assetType] = 100 * (assetCountProgress[assetType] / assetCount);
 
@@ -222,9 +226,10 @@ for (const file of files) {
             "Characters": "./OpenTaiko/Global/Characters",
             "Puchicharas": "./OpenTaiko/Global/PuchiChara"
         }[assetType];
-        const assetRelpath = (assetType === "Skins") ? assetObj.skinFolder : assetObj.charaFolder;
-        const assetSize = (assetType === "Skins") ? assetObj.skinSize : assetObj.charaSize;
-        const assetVersion = (assetType === "Skins") ? assetObj.skinVersion : assetObj.charaVersion;
+        const assetPrefix = AssetPrefix(assetType);
+        const assetRelpath = assetObj[`${assetPrefix}Folder`];
+        const assetSize = assetObj[`${assetPrefix}Size`];
+        const assetVersion = assetObj[`${assetPrefix}Version`];
 
         assetDLProgress[assetType][assetRelpath] = 0;
 
@@ -406,106 +411,36 @@ for (const file of files) {
 				<th></th>
 				<th></th>
 				<th>
-					<!-- Skins -->
-					{#if currentAsset === 0}
-					{#if assetCountProgressBar["Skins"] !== null}
-					<ProgressBar bind:value={assetCountProgressBar["Skins"]} max={100} />
+					{#if assetCountProgressBar[AssetTabType(currentAsset)] !== null}
+					<ProgressBar bind:value={assetCountProgressBar[AssetTabType(currentAsset)]} max={100} />
 					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Skins")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
-					{/if}
-					{/if}
-					<!-- Characters -->
-					{#if currentAsset === 1}
-					{#if assetCountProgressBar["Characters"] !== null}
-					<ProgressBar bind:value={assetCountProgressBar["Characters"]} max={100} />
-					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Characters")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
-					{/if}
-					{/if}
-					<!-- Puchicharas -->
-					{#if currentAsset === 2}
-					{#if assetCountProgressBar["Puchicharas"] !== null}
-					<ProgressBar bind:value={assetCountProgressBar["Puchicharas"]} max={100} />
-					{:else}
-					<button type="button" on:click={() => DownloadDisplayedAssets("Puchicharas")} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
-					{/if}
+					<button type="button" on:click={() => DownloadDisplayedAssets(AssetTabType(currentAsset))} class="button-green button-main"><i class="fa-solid fa-download"></i> {$_('assets.button.bulk_download')}</button>
 					{/if}
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			<!-- Skins -->
-			{#if currentAsset === 0}
-			{#each assetsInfo["Skins"] as skinInfo}
+			{#each assetsInfo[AssetTabType(currentAsset)] as info}
 			<tr>
-				<td>{skinInfo.skinName}</td>
+				<td>{info[`${AssetTabPrefix(currentAsset)}Name`]}</td>
 				<td>
-					<VersionNumberChip LatestVersion={skinInfo.skinVersion} CurrentVersion={optk_version} Strictness="Error" />
+					<VersionNumberChip LatestVersion={info[`${AssetTabPrefix(currentAsset)}Version`]} CurrentVersion={optk_version} Strictness="Error" />
 				</td>
-				<td>{skinInfo.skinResolution}</td>
-				<td>{skinInfo.skinCreator}</td>
-				<td>{skinInfo.skinSize}Mb</td>
+				<td>{info[`${AssetTabPrefix(currentAsset)}Resolution`]}</td>
+				<td>{info[`${AssetTabPrefix(currentAsset)}Creator`]}</td>
+				<td>{info[`${AssetTabPrefix(currentAsset)}Size`]}Mb</td>
 				<td>
 					<AssetStatusCell
 						IsScanning={assetScanning}
-						AssetType="Skins"
-						AssetInfo={skinInfo}
+						AssetType={AssetTabType(currentAsset)}
+						AssetInfo={info}
 						CurrentAssets={currentAssets}
 						DownloadMethod={DownloadAsset}
-						Progress={assetDLProgress["Skins"][skinInfo.skinFolder]}
+						Progress={assetDLProgress[AssetTabType(currentAsset)][info[`${AssetTabPrefix(currentAsset)}Folder`]]}
 						/>
 				</td>
 			</tr>
 			{/each}
-			{/if}
-			<!-- Characters -->
-			{#if currentAsset === 1}
-			{#each assetsInfo["Characters"] as charaInfo}
-			<tr>
-				<td>{charaInfo.charaName}</td>
-				<td>
-					<VersionNumberChip LatestVersion={charaInfo.charaVersion} CurrentVersion="{optk_version}" Strictness="Warning" />
-				</td>
-				<td>{charaInfo.charaResolution}</td>
-				<td>{charaInfo.charaCreator}</td>
-				<td>{charaInfo.charaSize}Mb</td>
-				<td>
-					<AssetStatusCell
-						IsScanning={assetScanning}
-						AssetType="Characters"
-						AssetInfo={charaInfo}
-						CurrentAssets={currentAssets}
-						DownloadMethod={DownloadAsset}
-						Progress={assetDLProgress["Characters"][charaInfo.charaFolder]}
-						/>
-				</td>
-			</tr>
-			{/each}
-			{/if}
-			<!-- Puchicharas -->
-			{#if currentAsset === 2}
-			{#each assetsInfo["Puchicharas"] as charaInfo}
-			<tr>
-				<td>{charaInfo.charaName}</td>
-				<td>
-					<VersionNumberChip LatestVersion={charaInfo.charaVersion} CurrentVersion={optk_version} Strictness="Warning" />
-				</td>
-				<td>{charaInfo.charaResolution}</td>
-				<td>{charaInfo.charaCreator}</td>
-				<td>{charaInfo.charaSize}Mb</td>
-				<td>
-					<AssetStatusCell
-						IsScanning={assetScanning}
-						AssetType="Puchicharas"
-						AssetInfo={charaInfo}
-						CurrentAssets={currentAssets}
-						DownloadMethod={DownloadAsset}
-						Progress={assetDLProgress["Puchicharas"][charaInfo.charaFolder]}
-						/>
-				</td>
-			</tr>
-			{/each}
-			{/if}
 		</tbody>
 	</table>
 </div>

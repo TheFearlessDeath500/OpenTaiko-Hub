@@ -111,40 +111,8 @@
 	<!-- ... -->
 </TabGroup>
 
-<!-- OpenTaiko Changelogs -->
-{#if currentInfo === 0}
-    <div class="content">
-        <Accordion class="card rounded-container-token">
-            <AccordionItem>
-                <svelte:fragment slot="summary"><b>{$_('info.legend.title')}</b></svelte:fragment>
-                <svelte:fragment slot="content">
-                    <h2><b>[Feat]</b></h2>
-                    <p>{$_('info.legend.feat')}</p>
-
-                    <h2><b>[Enhancement]</b></h2>
-                    <p>{$_('info.legend.enhancement')}</p>
-
-                    <h2><b>[Fix/BugFix]</b></h2>
-                    <p>{$_('info.legend.fix')}
-                    <br><span class="smalltext"><b>{$_('info.legend.fix_note')}</b></span></p>
-
-                    <h2><b>[Chore]</b></h2>
-                    <p>{$_('info.legend.chore')}</p>
-
-                    <h2><b>[i18n]</b></h2>
-                    <p>{$_('info.legend.i18n')}</p>
-                </svelte:fragment>
-            </AccordionItem>
-        </Accordion>
-
-        <hr class="my-3">
-
-        {@html changelogContent}
-    </div>
-{/if}
-
-<!-- OpenTaiko Hub Changelogs -->
-{#if currentInfo === 1}
+<!-- OpenTaiko Changelogs or OpenTaiko Hub Changelogs -->
+{#if currentInfo === 0 || currentInfo === 1}
     <div class="content">
         <Accordion class="card rounded-container-token">
             <AccordionItem>
@@ -166,15 +134,21 @@
                     <h2><b>[i18n]</b></h2>
                     <p>{$_('info.legend.i18n')}</p>
 
-                    <h2><b>[Theme]</b></h2>
-                    <p>{$_('info.legend.theme')}</p>
+                    {#if currentInfo === 1}
+                        <h2><b>[Theme]</b></h2>
+                        <p>{$_('info.legend.theme')}</p>
+                    {/if}
                 </svelte:fragment>
             </AccordionItem>
         </Accordion>
 
         <hr class="my-3">
 
-        {@html hubChangelogContent}
+        {#if currentInfo === 0}
+            {@html changelogContent}
+        {:else if currentInfo === 1}
+            {@html hubChangelogContent}
+        {/if}
     </div>
 {/if}
 

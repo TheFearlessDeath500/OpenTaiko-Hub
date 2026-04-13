@@ -2,8 +2,7 @@
     // Dependencies
     import { onMount } from 'svelte';
     import { TabGroup, Tab } from '@skeletonlabs/skeleton';
-    import { getContext } from 'svelte';
-    const { GetOS } = getContext('toast');
+    import { GetOS } from '$lib/utils/path.js';
     import { _ } from 'svelte-i18n';
 
     // Tools
