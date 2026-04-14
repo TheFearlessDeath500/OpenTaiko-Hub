@@ -253,6 +253,8 @@
     "card": {
       "peepo_origin":     { "subtitle": "原作者最新版",   "text": "原作者 samyuu 維護的版本，可編輯不使用實驗功能的普通譜面。" },
       "peepo_optk":       { "subtitle": "OpenTaiko 團隊最新版", "text": "由 Komi 與 OpenTaiko 團隊繼續維護的版本，增加了 OpenTaiko 支援的實驗功能，並強化了普通譜面的編輯功能。" },
+      "peepo_preview":    { "subtitle": "OpenTaiko 團隊最新版（預覽）", "text": "IID 維護的下個 OpenTaiko 團隊版本的預覽版本。增加了更多實驗功能。" },
+      "peepo_sdl3":       { "subtitle": "OpenTaiko 團隊最新版（SDL3 版）", "text": "Steve-xmh 移植至 SDL3 的跨平台版本，由 IID 篩選功能作為未來的 OpenTaiko 團隊版本。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer 版", "text": "產生並查看譜面的可視化圖片與統計資訊！" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "官方最新版",   "text": "最推薦的譜面對拍工具！" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "官方最新版",  "text": "最推薦的製作譜面 VTT 歌詞檔的工具！" },

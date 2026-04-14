@@ -9,6 +9,8 @@
     import ToolCard from '$lib/components/ToolCard.svelte';
     import peepoSamyuuScreenshotUrl from '$lib/peepoSamyuu.png';
     import peepoScreenshotUrl from '$lib/peepo.png';
+    import peepoPreviewScreenshotUrl from '$lib/peepoPreview.png';
+    import peepoSDL3ScreenshotUrl from '$lib/peepoSDL3.png';
     import arrowScreenshotUrl from '$lib/arrow.png';
     import tjatoolsScreenshotUrl from '$lib/tjatools.png';
 	import subeditScreenshotUrl from '$lib/subedit.png';
@@ -63,9 +65,9 @@
 			</div>
 		</div>
 
-		{#if optk_OS === "Win"}	
-			<h2 class="my-3">{$_('tools.charting.peepo_dl')}</h2>
-			<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">	
+		<h2 class="my-3">{$_('tools.charting.peepo_dl')}</h2>
+		<div class="w-full text-token grid grid-cols-2 md:grid-cols-2 gap-4">
+			{#if optk_OS === "Win"}	
 				<ToolCard 
 					Url="https://drive.google.com/uc?export=download&id=1TQuvKo1tBZrXZIMlUMJ3-1vU1jfsxI2H"
 					ImageSrc={peepoSamyuuScreenshotUrl}
@@ -78,8 +80,20 @@
 					CardSubtitle={$_('tools.card.peepo_optk.subtitle')}
 					CardText={$_('tools.card.peepo_optk.text')}
 				/>
-			</div>
-		{/if}
+				<ToolCard
+					Url="https://github.com/IepIweidieng/PeepoDrumKit/releases/latest"
+					ImageSrc={peepoPreviewScreenshotUrl}
+					CardSubtitle={$_('tools.card.peepo_preview.subtitle')}
+					CardText={$_('tools.card.peepo_preview.text')}
+				/>
+			{/if}
+			<ToolCard
+				Url="https://github.com/IepIweidieng/PeepoDrumKit-sdl3/releases/latest"
+				ImageSrc={peepoSDL3ScreenshotUrl}
+				CardSubtitle={$_('tools.card.peepo_sdl3.subtitle')}
+				CardText={$_('tools.card.peepo_sdl3.text')}
+			/>
+		</div>
 
 		<h1 class="my-3">{$_('tools.charting.additional')}</h1>
 		<div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">

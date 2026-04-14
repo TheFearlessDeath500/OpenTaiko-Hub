@@ -253,6 +253,8 @@
     "card": {
       "peepo_origin":     { "subtitle": "原作最新版",   "text": "原作者samyuu氏による版本。実験的機能なしの通常譜面に使用します。" },
       "peepo_optk":       { "subtitle": "OpenTaikoチーム最新版", "text": "Komi氏とOpenTaikoチームが継続している版本。OpenTaikoがサポートする実験的機能や通常譜面の編集が強化されています。" },
+      "peepo_preview":    { "subtitle": "OpenTaikoチーム最新版（プレビュー）", "text": "IID氏による次のOpenTaikoチーム版のプレビュー。より多くの実験的機能が追加されます。" },
+      "peepo_sdl3":       { "subtitle": "OpenTaikoチーム最新版（SDL3ポート）", "text": "Steve-xmh氏によるクロスプラットフォームのSDL3ポートで、IID氏が未来のOpenTaikoチーム版のために選択した機能を備えています。" },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer's fork", "text": "譜面を視覚化し、統計情報をリアルタイムで確認できます！" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "公式最新版",   "text": "譜面を簡単に同期できる推奨ツールです！" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "公式最新版",  "text": "譜面用のVTTファイルを作成するための推奨ツールです！" },
