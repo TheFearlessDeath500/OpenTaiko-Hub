@@ -74,6 +74,8 @@
     "col": {
       "name":   "Song name",
       "folder": "Folder",
+      "difficulties": "Difficulties",
+      "charter": "Charter: ",
       "size":   "Size",
       "status": "Status"
     },
@@ -151,9 +153,9 @@
       "good":        "Good",
       "ok":          "OK",
       "bad":         "Bad",
+      "list_points": "List pts",
       "video":       "Video",
-      "status":      "Status",
-      "list_points": "List pts"
+      "status":      "Status"
     },
     "video_link": "Watch",
     "close":      "Close",
@@ -235,18 +237,29 @@
     },
     "charting": {
       "primary":   "Primary resources:",
-      "tutorial":  "Charting tutorial by ugyuu.",
+      "tutorial": {
+        "title":    "Taiko .TJA Charting Tutorial",
+        "subtitle": "Charting tutorial by ugyuu."
+      },
       "peepo_dl":  "Download PeepoDrumKit:",
       "additional": "Additional resources:"
     },
+    "lyrics": {
+      "dl": "Lyric editor"
+    },
+    "submit": {
+      "soundtrack": "OpenTaiko soundtrack"
+    },
     "card": {
-      "peepo_official":   { "title": "PeepoDrumKit", "subtitle": "Official Latest",   "text": "The official latest version by samyuu, for regular charts without the experimental features." },
-      "peepo_unofficial": { "title": "PeepoDrumKit", "subtitle": "Unofficial Latest", "text": "The unofficial latest version continued by Komi, adding experimental features supported by OpenTaiko." },
+      "peepo_origin":     { "subtitle": "Original Latest",   "text": "The original version by samyuu, for regular charts without the experimental features." },
+      "peepo_optk":       { "subtitle": "OpenTaiko Team Latest", "text": "The version continued by Komi and OpenTaiko Team members, adding experimental features supported by OpenTaiko and enhancing regular editing." },
+      "peepo_preview":    { "subtitle": "OpenTaiko Team Latest (Preview)", "text": "Preview of next OpenTaiko Team version by IID, adding more experimental features." },
+      "peepo_sdl3":       { "subtitle": "OpenTaiko Team Latest (SDL3 Port)", "text": "The cross-platform SDL3 port by Steve-xmh, with features selected by IID for next OpenTaiko Team versions." },
       "tja_tools":        { "title": "TJA Tools",    "subtitle": "WHMHammer's fork",  "text": "Visualize your charts and check stats about them on the go!" },
       "arrow_vortex":     { "title": "Arrow Vortex", "subtitle": "Official Latest",   "text": "The recommended tool to sync your charts trouble free!" },
       "subtitle_edit":    { "title": "Subtitle Edit", "subtitle": "Official Latest",  "text": "The recommended tool to make VTT files for your charts!" },
-      "submission":       { "title": "OpenTaiko soundtrack", "subtitle": "Song submission form", "text": "You can submit your songs here for the OpenTaiko soundtrack! Charts are usually made within 2 weeks if the song is accepted." },
-      "suggestion":       { "title": "OpenTaiko soundtrack", "subtitle": "Song suggestion form",  "text": "You can recommand artists here whose songs you think would fit for OpenTaiko!" }
+      "submission":       { "title": "Song submission form", "subtitle": "For your songs", "text": "You can submit your songs here for the OpenTaiko soundtrack! Charts are usually made within 2 weeks if the song is accepted." },
+      "suggestion":       { "title": "Song suggestion form", "subtitle": "For other artists",  "text": "You can recommand artists here whose songs you think would fit for OpenTaiko!" }
     }
   },
   "themes": {

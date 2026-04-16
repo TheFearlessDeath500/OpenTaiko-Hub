@@ -4,22 +4,16 @@
     export let OnClick = () => {};
     export let text = "";
     export let textColor = "";
-
-    let isActive = false;
 </script>
 
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div 
+<button type="button"
     class="button"
     on:click={OnClick}
-    style="background-image: linear-gradient({isActive ? color2 : color1}, {isActive ? color1 : color2}); color:{textColor}"
-    on:mousedown={() => (isActive = true)}
-    on:mouseup={() => (isActive = false)}
-    on:mouseleave={() => (isActive = false)}
+    style="--color1: {color1}; --color2: {color2}; --textColor: {textColor}"
 >
     {text}
-</div>
+</button>
 
 <style>
     .button {
@@ -30,8 +24,15 @@
         margin: 5px;
         padding: 5px;
         
-        color: white;
+        --textcolor: white;
         text-decoration: none;
         cursor: pointer;
+
+        background-image: linear-gradient(var(--color1), var(--color2));
+        color: var(--textColor)
+    }
+
+    .button:active {
+        background-image: linear-gradient(var(--color2), var(--color1));
     }
 </style>

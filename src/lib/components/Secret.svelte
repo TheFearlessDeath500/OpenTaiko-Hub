@@ -34,6 +34,7 @@
         if (url) {
             const downloadurl = document.createElement("a");
             downloadurl.href = url;
+            downloadurl.target = "_blank";
             downloadurl.click();
         }
     }
@@ -56,44 +57,6 @@
     </div>
 
     <script>
-        const setColor = () => {
-        document.getElementById("secret").style.backgroundColor = "white"
-    }
-
-    const getSecret = async () => {
-        const secret = document.getElementById("secret").value;
-        if (secret === "" || !secret) return;
-
-        const secret_value = btoa(secret).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-
-        const url = "https://opentaiko.neocities.org/" + secret_value + ".zip"
-        const response = await fetch(url, { method: "HEAD" });
-
-        if (response.ok) {
-            console.log("Secret found!");
-            document.getElementById("secret").style.backgroundColor = "rgb(150,255,150)";
-            setTimeout(setColor, 2000);
-            return url;
-        }
-        else {
-            console.log("Secret not found. Created '" + secret_value + "' from '" + secret + "'.");
-            document.getElementById("secret").style.backgroundColor = "rgb(255,150,150)";
-            setTimeout(setColor, 2000);
-            return;
-        }
-    }
-
-    const fetchSecret = async () => {
-        const url = await getSecret();
-
-        if (url) {
-            const downloadurl = document.createElement("a");
-            downloadurl.href = url;
-            downloadurl.target = "_blank"; 
-            downloadurl.click();
-        }
-    }
-
     function disableImgDragging() {
         var images = document.getElementsByTagName("img");
         for(var i = 0 ; i < images.length ; i++) {

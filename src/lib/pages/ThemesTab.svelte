@@ -25,9 +25,8 @@
 
     let currentThemeModeDebug = 'dark';
 
-    const ThemeChangerDebug = async () => {
-        const themeselect = document.getElementById("themeselect");
-        const themevalue = themeselect.value;
+    const ThemeChangerDebug = async (e) => {
+        const themevalue = e.target.value;
         const themetarget = document.getElementById('themetarget');
         const themedata = themetarget.getAttribute('data-theme');
 
@@ -41,7 +40,8 @@
         }
     }
 
-    const ThemeModeChangerDebug = async () => {
+    const ThemeModeChangerDebug = async (e) => {
+        currentThemeModeDebug = e.target.value;
         if (currentThemeModeDebug === "dark") {
             setModeCurrent(false);
             console.log("DEBUG: mode has been changed to dark")
@@ -73,9 +73,8 @@
         document.body.dataset.theme = currentTheme;
     }
 
-    const ThemeChanger = async () => {
-        const themeselect = document.getElementById("themeselect");
-        const themevalue = themeselect.value;
+    const ThemeChanger = async (e) => {
+        const themevalue = e.target.value;
         const themetarget = document.getElementById('themetarget');
         const themedata = themetarget.getAttribute('data-theme');
 
@@ -125,7 +124,8 @@
         }
     }
 
-    const ThemeModeChanger = async () => {
+    const ThemeModeChanger = async (e) => {
+        currentThemeMode = e.target.value;
         const prefsDir = await GetPreferencesPath();
         await mkdir(prefsDir, { recursive: true });
         const thememode_settings = await path.join(prefsDir, 'thememode.json');
@@ -162,13 +162,12 @@
 </script>
 
 {#if currentTile === 7}
-    {#if debugMode === false}
         <div id="themetab">
             <section class="card w-full">
                 <div class="p-4 space-y-4">
-                    <h1>{$_('themes.title')}</h1>
+                    <h1>{debugMode ? $_('themes.title_debug') : $_('themes.title')}</h1>
                     <div class="flex gap-2">
-                        <select id="themeselect" size="11" class="select w-full max-w-[265px]" value={currentTheme} on:change={ThemeChanger} on:click={TryFetchingCurrentTheme}>
+                        <select size="11" class="select w-full max-w-[265px]" value={currentTheme} on:change={debugMode ? ThemeChangerDebug : ThemeChanger} on:click={debugMode ? () => {} : TryFetchingCurrentTheme}>
                             <optgroup label={$_('themes.optgroup.optk')}>
                                 <option value="gleamingsky">Gleaming Sky</option>
                                 <option value="dashy">888</option>
@@ -246,121 +245,25 @@
                         </div>
                     </div>
 
-                    <RadioGroup>
-                        <RadioItem bind:group={currentThemeMode} on:change={ThemeModeChanger} name="justify" value={"dark"}><i class="fa-solid fa-moon"></i></RadioItem>
-                        <RadioItem bind:group={currentThemeMode} on:change={ThemeModeChanger} name="justify" value={"light"}><i class="fa-solid fa-sun"></i></RadioItem>
-
-                        {#if currentThemeMode === "dark"}
-                            <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.dark') } })}</p>
-                        {:else if currentThemeMode === "light"}
-                            <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.light') } })}</p>
-                        {/if}
-                    </RadioGroup>
-                </div>
-            </section>
-        </div>
-    {:else if debugMode === true}
-        <div id="themetab">
-            <section class="card w-full">
-                <div class="p-4 space-y-4">
-                    <h1>{$_('themes.title_debug')}</h1>
-                    <div class="flex gap-2">
-                        <select id="themeselect" size="11" class="select w-full max-w-[265px]" value={currentTheme} on:change={ThemeChangerDebug}>
-                            <optgroup label={$_('themes.optgroup.optk')}>
-                                <option value="gleamingsky">Gleaming Sky</option>
-                                <option value="dashy">888</option>
-                                <option value="deceiver">Deceiver</option>
-                                <option value="onyx">Onyx</option>
-                                <option value="pearl">Pearl</option>
-                                <option value="optkkun">OpenTaiko-Kun</option>
-                            </optgroup>
-
-                            <optgroup label={$_('themes.optgroup.skeleton')}>
-                                <option value="skeleton">Legacy</option>
-                                <option value="wintry">Wintry</option>
-                                <option value="modern">Modern</option>
-                                <option value="rocket">Rocket</option>
-                                <option value="seafoam">Seafoam</option>
-                                <option value="vintage">Vintage</option>
-                                <option value="sahara">Sahara</option>
-                                <option value="hamlindigo">Hamlindigo</option>
-                                <option value="gold-nouveau">Gold Nouveau</option>
-                                <option value="crimson">Crimson</option>
-                            </optgroup>
-                        </select>
-
-                        <div class="card w-full p-4 rounded-container-token">
-                            <h1>{$_('themes.preview.title')}</h1>
-
-                            <hr class="m-4">
-
-                            <h2>{$_('themes.preview.color')}</h2>
-                            <div class="grid grid-cols-1 grid-rows-3 gap-2">
-                                <div class="flex">
-                                    <p class="flex gap-1 badge card p-2">
-                                        <span>{$_('themes.preview.accents')}</span>
-                                        <span class="badge p-2 variant-filled-primary">{$_('themes.preview.accent_primary')}</span>
-                                        <span class="badge p-2 variant-filled-secondary">{$_('themes.preview.accent_secondary')}</span>
-                                        <span class="badge p-2 variant-filled-tertiary">{$_('themes.preview.accent_tertiary')}</span>
-                                    </p>
-                                </div>
-
-                                <div class="flex">
-                                    <p class="flex gap-1 badge card p-2">
-                                        <span>{$_('themes.preview.buttons')}</span>
-                                        <span class="badge p-2 button-blue">{$_('themes.preview.btn_action')}</span>
-                                        <span class="badge p-2 button-green">{$_('themes.preview.btn_download')}</span>
-                                        <span class="badge p-2 button-gray">{$_('themes.preview.btn_repeat')}</span>
-                                        <span class="badge p-2 button-red">{$_('themes.preview.btn_error')}</span>
-                                    </p>
-                                </div>
-
-                                <div class="flex">
-                                    <p class="flex gap-1 badge card p-2">
-                                        <span>{$_('themes.preview.notifs')}</span>
-                                        <span class="badge p-2 variant-filled-success">{$_('themes.preview.notif_success')}</span>
-                                        <span class="badge p-2 variant-filled-warning">{$_('themes.preview.notif_warning')}</span>
-                                        <span class="badge p-2 variant-filled-error">{$_('themes.preview.notif_error')}</span>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <hr class="m-4">
-
-                            <h2>{$_('themes.credits.title')}</h2>
-                            <p>{$_('themes.credits.text')}</p>
-                            <a href="https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md" target="_blank">https://github.com/OpenTaiko/OpenTaiko-Hub/blob/main/README.md</a>
-
-                            <hr class="m-4">
-
-                            <h2>{$_('lang.label')}</h2>
-                            <select class="select w-full max-w-[200px]" bind:value={$locale} on:change={() => SaveLocale($locale)}>
-                                <option value="en">{$_('lang.en')}</option>
-                                <option value="ja">{$_('lang.ja')}</option>
-                                <option value="zh-Hans">{$_('lang.zh_Hans')}</option>
-                                <option value="zh-Hant">{$_('lang.zh_Hant')}</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
+                    <div class={debugMode ? "flex gap-2" : ""}>
                         <RadioGroup>
-                            <RadioItem bind:group={currentThemeModeDebug} on:change={ThemeModeChangerDebug} name="justify" value={"dark"}><i class="fa-solid fa-moon"></i></RadioItem>
-                            <RadioItem bind:group={currentThemeModeDebug} on:change={ThemeModeChangerDebug} name="justify" value={"light"}><i class="fa-solid fa-sun"></i></RadioItem>
+                            <RadioItem group={debugMode ? currentThemeModeDebug : currentThemeMode} on:change={debugMode ? ThemeModeChangerDebug : ThemeModeChanger} name="justify" value={"dark"}><i class="fa-solid fa-moon"></i></RadioItem>
+                            <RadioItem group={debugMode ? currentThemeModeDebug : currentThemeMode} on:change={debugMode ? ThemeModeChangerDebug : ThemeModeChanger} name="justify" value={"light"}><i class="fa-solid fa-sun"></i></RadioItem>
 
-                            {#if currentThemeModeDebug === "dark"}
+                            {#if (debugMode ? currentThemeModeDebug : currentThemeMode) === "dark"}
                                 <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.dark') } })}</p>
-                            {:else if currentThemeModeDebug === "light"}
+                            {:else if (debugMode ? currentThemeModeDebug : currentThemeMode) === "light"}
                                 <p class="flex items-center px-2">{$_('themes.mode.current', { values: { mode: $_('themes.mode.light') } })}</p>
                             {/if}
                         </RadioGroup>
 
-                        <button type="button" on:click={DisableDebugMode} class="button-red button-main"><i class="fa-solid fa-code"></i> {$_('themes.debug.disable_btn')}</button>
+                        {#if debugMode}
+                            <button type="button" on:click={DisableDebugMode} class="button-red button-main"><i class="fa-solid fa-code"></i> {$_('themes.debug.disable_btn')}</button>
+                        {/if}
                     </div>
                 </div>
             </section>
         </div>
-    {/if}
 {:else}
     <!-- Hide content -->
 {/if}

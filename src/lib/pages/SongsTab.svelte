@@ -16,7 +16,7 @@
     import { _ } from 'svelte-i18n';
     import { get } from 'svelte/store';
 
-    import { GetRootPath } from "../utils/path.js";
+    import { GetRootPath } from "$lib/utils/path.js";
 
     // Song management
     import AudioPlayer from '$lib/components/AudioPlayer.svelte';
@@ -36,9 +36,12 @@
 
     // Hall of Fame
     const hofDbUrl = 'https://opentaiko.github.io/hof.db3';
-    const hofDifficultyMap    = { 0: "Easy", 1: "Normal", 2: "Hard", 3: "Oni", 4: "Edit" };
-    const hofDifficultyRevMap = { "Easy": 0, "Normal": 1, "Hard": 2, "Oni": 3, "Edit": 4 };
-    const hofDiffShortMap     = { "Easy": "EZ", "Normal": "NM", "Hard": "HD", "Oni": "EX", "Edit": "EXEX" };
+    const hofDifficultyMap    = ["Easy", "Normal", "Hard", "Oni", "Edit"];
+    const hofDifficultyRevMap = Object.fromEntries(hofDifficultyMap.map((v, i) => [v, i]));
+    const diffShortMap        = ["ez", "nm", "hd", "ex", "exex"];
+    const diffShortRevMap     = Object.fromEntries(diffShortMap.map((v, i) => [v, i]));
+    const hofDiffShortMap     = (key) => diffShortMap[hofDifficultyRevMap[key]];
+    const hofDiffShortRevMap  = (key) => hofDifficultyMap[diffShortRevMap[key]];
     let hofDb = null;
     // uniqueId → { difficultyString → globalRank }
     let hofMap = {};
@@ -139,14 +142,13 @@
         hofModalOpen = true;
     };
 
-    const filter1 = (sInfo) => {
-        const uids = ["losTPEtAlSwANDERRBHLiXoUNdsetSUnaN"];
-        return sInfo.filter(obj => !uids.includes(obj.uniqueId));
-    }
-
-    const filter2 = (sInfo) => {
-        return sInfo;
-    }
+    const filters = {
+        undefined: (sInfo) => sInfo,
+        "zh-CN": (sInfo) => {
+            const uids = ["losTPEtAlSwANDERRBHLiXoUNdsetSUnaN"];
+            return sInfo.filter(obj => !uids.includes(obj.uniqueId));
+        }
+    };
 
     const updateSoundtrackInfo = async () => {
         try {
@@ -154,13 +156,7 @@
         if (response.ok) {
             const text = await response.text();
             soundtrackInfo = JSON.parse(text);
-
-            if (navigator.language === "zh-CN") {
-                soundtrackInfo = filter1(soundtrackInfo);
-            }
-            else {
-                soundtrackInfo = filter2(soundtrackInfo);
-            }
+            soundtrackInfo = (filters[navigator.language] ?? filters[undefined])(soundtrackInfo);
         } else {
             soundtrackInfo = {};
         }
@@ -299,29 +295,10 @@
                 soundtrackInfo = soundtrackInfo.sort((a, b) => mult * (a.chartSize - b.chartSize));
                 break;
             }
-            case ("ez"):
+            case ("ez"): case ("nm"): case ("hd"): case ("ex"): case ("exex"):
             {
-                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties.Easy) - UndefinedToMinusOne(b.chartDifficulties.Easy))));
-                break;
-            }
-            case ("nm"):
-            {
-                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties.Normal) - UndefinedToMinusOne(b.chartDifficulties.Normal))));
-                break;
-            }
-            case ("hd"):
-            {
-                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties.Hard) - UndefinedToMinusOne(b.chartDifficulties.Hard))));
-                break;
-            }
-            case ("ex"):
-            {
-                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties.Oni) - UndefinedToMinusOne(b.chartDifficulties.Oni))));
-                break;
-            }
-            case ("exex"):
-            {
-                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties.Edit) - UndefinedToMinusOne(b.chartDifficulties.Edit))));
+                let diff = hofDiffShortRevMap(column);
+                soundtrackInfo = soundtrackInfo.sort((a, b) => AlterValueTowerDan(a, b, mult * (UndefinedToMinusOne(a.chartDifficulties[diff]) - UndefinedToMinusOne(b.chartDifficulties[diff]))));
                 break;
             }
         }
@@ -539,18 +516,16 @@
 			<tr>
 				<th><button on:click={() => SortSongsByColumn("name")}>{$_('songs.col.name')}</button></th>
 				<th><button on:click={() => SortSongsByColumn("genre")}>{$_('songs.col.folder')}</button></th>
-				<th colspan="5" class="w-1/5">Difficulties</th>
+				<th colspan="5" class="w-1/5">{$_('songs.col.difficulties')}</th>
 				<th><button on:click={() => SortSongsByColumn("size")}>{$_('songs.col.size')}</button></th>
 				<th class="w-1/6">{$_('songs.col.status')}</th>
 			</tr>
 			<tr>
 				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder={$_('songs.filter.song')} bind:value={searchSong}></th>
 				<th><input class="w-full rounded-md px-3 py-2 text-blue-950" placeholder={$_('songs.filter.folder')} bind:value={searchGenre}></th>
-				<th><button on:click={() => SortSongsByColumn("ez")}>EZ</button></th>
-				<th><button on:click={() => SortSongsByColumn("nm")}>NM</button></th>
-				<th><button on:click={() => SortSongsByColumn("hd")}>HD</button></th>
-				<th><button on:click={() => SortSongsByColumn("ex")}>EX</button></th>
-				<th><button on:click={() => SortSongsByColumn("exex")}>EXEX</button></th>
+				{#each diffShortMap as diff}
+					<th><button on:click={() => SortSongsByColumn(diff)}> {diff.toUpperCase()} </button></th>
+				{/each}
 				<th></th>
 				<th>
 					{#if songCountProgressBar !== null}
@@ -583,21 +558,11 @@
 					<SongDifficultyChip SongInfo={songInfo} Difficulty="Tower"/>
 				</td>
 				{:else}
-				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Easy" OnCrownClick={openHoFModal}/>
-				</td>
-				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Normal" OnCrownClick={openHoFModal}/>
-				</td>
-				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Hard" OnCrownClick={openHoFModal}/>
-				</td>
-				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Oni" OnCrownClick={openHoFModal}/>
-				</td>
-				<td>
-					<SongDifficultyChip SongInfo={songInfo} Difficulty="Edit" OnCrownClick={openHoFModal}/>
-				</td>
+					{#each hofDifficultyMap as diff}
+						<td>
+							<SongDifficultyChip SongInfo={songInfo} Difficulty={diff} OnCrownClick={openHoFModal}/>
+						</td>
+					{/each}
 				{/if}
 				<td>{songInfo.chartSize}Mb</td>
 				<!-- songDLProgress[songObj.uniqueId] -->
@@ -692,8 +657,8 @@
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div class="card p-6 space-y-4 modal-card" on:click|stopPropagation>
         <div class="flex justify-between items-center">
-            <h2 class="h3">Hall of Fame — {hofModalSongInfo.chartTitle} ({hofDiffShortMap[hofModalDifficulty]} #{hofMap[hofModalSongInfo.uniqueId]?.[hofModalDifficulty]})</h2>
-            <button class="button-red button-main" on:click={() => hofModalOpen = false}>{$_('hof.close')}</button>
+            <h2 class="h3">Hall of Fame — {hofModalSongInfo.chartTitle} ({hofDiffShortMap(hofModalDifficulty).toUpperCase()} #{hofMap[hofModalSongInfo.uniqueId]?.[hofModalDifficulty]})</h2>
+            <button class="btn-icon btn-icon-sm variant-filled" on:click={() => hofModalOpen = false} aria-label={$_('hof.close')}>✕</button>
         </div>
         <div class="flex flex-col gap-1">
             <a href="https://opentaiko.github.io/songinfo/{hofModalSongInfo.uniqueId}?d={hofDifficultyRevMap[hofModalDifficulty]}" target="_blank" class="text-blue-600 underline">
@@ -716,7 +681,7 @@
                         <th>{$_('hof.col.good')}</th>
                         <th>{$_('hof.col.ok')}</th>
                         <th>{$_('hof.col.bad')}</th>
-                        <th>LP</th>
+                        <th>{$_('hof.col.list_points')}</th>
                         <th>{$_('hof.col.video')}</th>
                     </tr>
                 </thead>

@@ -1,6 +1,6 @@
 <script>
     // Secret
-    import Secret from '../components/Secret.svelte';   
+    import Secret from '$lib/components/Secret.svelte';   
 </script>
 
 <Secret/>

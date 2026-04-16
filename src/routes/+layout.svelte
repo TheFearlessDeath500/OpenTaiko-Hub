@@ -7,7 +7,6 @@
     import { autoModeWatcher, getToastStore } from '@skeletonlabs/skeleton';
     import { initializeStores, Toast } from '@skeletonlabs/skeleton';
     import { download } from "@tauri-apps/plugin-upload";
-    import { type } from '@tauri-apps/plugin-os';
     import { readTextFile } from '@tauri-apps/plugin-fs';
     import { path } from '@tauri-apps/api';
 
@@ -75,23 +74,7 @@
         }
     }
 
-    const GetOS = async () => {
-        const currentPlatform = await type();
-        switch (currentPlatform) {
-            case "linux":
-                return "Linux";
-            case "windows":
-                return "Win";
-            case "macos":
-                return "Mac";
-            case "ios":
-            case "android":
-            default:
-                return "Unsupported";
-        }
-    }
-
-    setContext('toast', { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload, wait, GetOS });
+    setContext('toast', { TriggerError, TriggerWarning, TriggerSuccess, backoffDownload, wait });
 
     onMount(async () => {
         autoModeWatcher();
